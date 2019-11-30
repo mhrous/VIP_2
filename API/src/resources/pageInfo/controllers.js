@@ -1,6 +1,24 @@
 import User from "../user/user.model";
 import Payment from "../payment/payment.model";
 import { getFirstOfThisMonth, getFirstOfNextMonth } from "../../utils";
+
+export const onePartnerConst = async (req, res) => {
+  try {
+    let { _id } = req.query;
+
+    const data = {};
+    const user = await User.findById(_id)
+      .select("name")
+      .lean()
+      .exec();
+
+    data.user = user;
+    res.json({ data });
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 export const onePartner = async (req, res) => {
   try {
     let { _id, m, y } = req.query;
@@ -10,10 +28,6 @@ export const onePartner = async (req, res) => {
     const end = getFirstOfNextMonth(m, y);
     console.log(start.getDate(), "\n", end.getDate());
     const data = {};
-    const user = await User.findById(_id)
-      .select("name")
-      .lean()
-      .exec();
 
     const payment = await Payment.find({
       user: _id,
@@ -23,7 +37,6 @@ export const onePartner = async (req, res) => {
       .lean()
       .exec();
 
-    data.user = user;
     data.payment = payment;
     res.json({ data });
   } catch (e) {

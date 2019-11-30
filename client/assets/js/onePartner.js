@@ -234,8 +234,6 @@ $(document).ready(function() {
             y,
             success({ data }) {
               clearPaymentTable();
-
-              user.user = data.user;
               __DATA__.payment = data.payment || [];
               for (let p of __DATA__.payment) addPaymentToTable(p);
               console.log(data);
@@ -251,12 +249,16 @@ $(document).ready(function() {
           m,
           y,
           success({ data }) {
-            user.user = data.user;
             __DATA__.payment = data.payment || [];
 
             for (let p of __DATA__.payment) addPaymentToTable(p);
 
             console.log(data);
+          }
+        });
+        getDataConst({
+          success({ data }) {
+            user.user = data.user;
           }
         });
       }

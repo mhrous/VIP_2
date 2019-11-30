@@ -159,17 +159,6 @@ $(document).ready(function() {
     $("#account_tap").on("click", () => {
       dataPickerNode.removeClass("hide");
     });
-
-    let _DATE_ = new Date();
-    datePicker
-      .datepicker({
-        format: "mm-yyyy",
-        startView: "months",
-        minViewMode: "months"
-      })
-      .datepicker("setDate", "now");
-    _DATE_ = datePicker.val();
-    datePicker.on("change", function(e) {});
   };
 
   const modalInit = ({ addToTable, editFromTable }) => {

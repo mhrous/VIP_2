@@ -74,7 +74,6 @@ const renderSiteBar = () => {
         ["driver", "سائقين"],
         ["car", "سيارات"],
         ["partner", "شركاء"],
-        ["notifications", "اشعارات"],
         ["users", "مستخدمين"],
         ["settings", "اعدادات"]
       ];

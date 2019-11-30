@@ -14,17 +14,7 @@ $(document).ready(function() {
   };
   const driverTable = tableNode.DataTable(tableConfig);
 
-  // const datePicker = $("#date-picker input");
-  // datePicker
-  //   .datepicker({
-  //     format: "mm-yyyy",
-  //     startView: "months",
-  //     minViewMode: "months"
-  //   })
-  //   .datepicker("setDate", "now");
-  // datePicker.on("change", function() {
-  //   console.log($(this).val());
-  // });
+ 
   $("#new-travel").on("click", function() {
     $("#travel-modal #modal").modal("show");
   });

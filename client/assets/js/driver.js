@@ -46,15 +46,7 @@ $(document).ready(function() {
       dataPickerNode.removeClass("hide");
     });
 
-    let _DATE_ = new Date();
-    datePicker
-      .datepicker({
-        format: "mm-yyyy",
-        startView: "months",
-        minViewMode: "months"
-      })
-      .datepicker("setDate", "now");
-    _DATE_ = datePicker.val();
+  
     datePicker.on("change", function(e) {});
   };
 

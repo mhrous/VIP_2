@@ -2,6 +2,15 @@ const endPoint = "http://localhost:8888/api";
 const headers = {};
 const id = window.location.search.split("=")[1];
 
+const getDataConst = ({ success }) => {
+  $.ajax({
+    type: "GET",
+    url: `${endPoint}/page/one_partner_const${window.location.search}`,
+    success,
+    headers
+  });
+};
+
 const getData = ({ success, m, y }) => {
   $.ajax({
     type: "GET",
