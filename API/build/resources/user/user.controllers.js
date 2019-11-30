@@ -221,7 +221,6 @@ const getUserName = async (req, res) => {
         findQuery.power = ["D", "P"];
     }
 
-    console.log(findQuery);
     const data = await _user.default.find(_objectSpread({}, findQuery, {
       active: true
     })).select("name power").lean().exec();

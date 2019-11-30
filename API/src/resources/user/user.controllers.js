@@ -152,7 +152,6 @@ export const getUserName = async (req, res) => {
       default:
         findQuery.power = ["D", "P"];
     }
-    console.log(findQuery);
 
     const data = await User.find({ ...findQuery, active: true })
       .select("name power")

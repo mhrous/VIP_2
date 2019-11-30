@@ -22,11 +22,6 @@ const paymentSchema = new _mongoose.default.Schema({
   date: {
     type: Date,
     required: true
-  },
-  _type: {
-    type: String,
-    enum: ["D", "P"],
-    default: "D"
   }
 });
 paymentSchema.index({

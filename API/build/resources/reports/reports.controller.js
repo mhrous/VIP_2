@@ -166,7 +166,6 @@ const InfoPartner = async (req, res) => {
       data
     });
   } catch (e) {
-    console.log(e);
     return res.status(400).end();
   }
 };
@@ -206,7 +205,6 @@ const InfoCar = async (req, res) => {
         }]]
       }
     }];
-    console.log(cars);
     cars.forEach((e, i) => {
       const style = (i + 1) % 2 ? "odd" : "even";
       let phoneString = "";
@@ -231,7 +229,6 @@ const InfoCar = async (req, res) => {
       data
     });
   } catch (e) {
-    console.log(e);
     return res.status(400).end();
   }
 };

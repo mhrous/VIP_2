@@ -12,7 +12,12 @@
     />
     <link rel="stylesheet" href="../assets/vendor/nucleo/css/nucleo.css" />
 
+    <link
+      href="../assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"
+      rel="stylesheet"
+    />
     <link href="../assets/vendor/argon/css/argon.min.css" rel="stylesheet" />
+
     <link rel="stylesheet" href="../assets/css/vip.css" />
   </head>
 
@@ -41,9 +46,9 @@
         class="position-relative flex-grow-1 p-4"
       >
         <div>
-          <div class="nav-wrapper">
+          <div class="nav-wrapper row">
             <ul
-              class="nav nav-pills p-0 nav-fill  tap-choise  flex-row"
+              class="nav nav-pills p-0 nav-fill col-6  tap-choise  flex-row"
               role="tablist"
             >
               <li class="nav-item p-0">
@@ -76,15 +81,14 @@
               </li>
             </ul>
 
-            <div style="position: fixed;top: 40px;left: 40px;">
-              <div class="form-group " id="date-picker">
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text">
-                      <i class="ni ni-calendar-grid-58"></i>
-                    </span>
-                  </div>
-                  <input class="form-control datepicker" s type="text" />
+            <div id="MainDate" class="col-6">
+              <div class="row float-left">
+                <div class="col-md-12">
+                  <date-picker
+                    name="date"
+                    v-model="date"
+                    :config="options"
+                  ></date-picker>
                 </div>
               </div>
             </div>
@@ -93,6 +97,7 @@
           <div class="tab-content">
             <div class="tab-pane fade show active " id="t1">
               <table
+                id="account-table"
                 id="all-drivers-table"
                 class="table table-striped table-bordered"
                 cellspacing="0"
@@ -115,7 +120,7 @@
             </div>
             <div class="tab-pane fade " id="t2">
               <table
-                id="account-table"
+                id="repairing-table"
                 class="table table-striped table-bordered"
                 cellspacing="0"
                 width="100%"
@@ -135,7 +140,7 @@
 
             <div class="tab-pane fade " id="t4">
               <table
-                id="account-table"
+                id="payment-table"
                 class="table table-striped table-bordered"
                 cellspacing="0"
                 width="100%"
@@ -219,9 +224,9 @@
     <script src="../assets/vendor/bootstrap/js/bootstrap.min.js"></script>
     <script src="../assets/vendor/dataTables/js/dataTables.min.js"></script>
     <script src="../assets/vendor/dataTables/js/dataTables.bootstrap4.min.js"></script>
-    <script src="../assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
 
     <script src="../assets/vendor/vue/vue.js"></script>
+    <script src="../assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
     <script src="../assets/js/lib.js"></script>
     <script src="../assets/js/services/onePartner.js"></script>
     <script src="../assets/js/onePartner.js"></script>

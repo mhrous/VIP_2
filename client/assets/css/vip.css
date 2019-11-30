@@ -22,19 +22,18 @@ html {
 }
 .btn-icon-sidebar-on {
   background: #5e72e4;
-  
+
   z-index: 100;
   margin-top: 30px;
   color: #fff;
   text-align: center;
   width: 40px;
-  padding-top: .3rem;
+  padding-top: 0.3rem;
   border-top-left-radius: 1rem;
   border-bottom-left-radius: 1rem;
   cursor: pointer;
-
 }
-.btn-icon-sidebar-on.none{
+.btn-icon-sidebar-on.none {
   display: none;
 }
 .nav-item a {
@@ -129,12 +128,7 @@ th {
   padding-left: 10px !important;
   padding-right: 10px !important;
   width: 23px !important;
-  /* background: red !important; */
 
   margin: 0 !important;
-  border-radius: 0 !important ;
-}
-
-#appp .bootstrap-datetimepicker-widget {
-  width: 425px !important;
+  border-radius: 1rem !important ;
 }

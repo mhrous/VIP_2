@@ -569,42 +569,6 @@
     <script src="../assets/vendor/dataTables/js/dataTables.bootstrap4.min.js"></script>
     <!-- <script src="../assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script> -->
     <script src="../assets/vendor/vue/vue.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/moment@2.22"></script>
-    <script src="https://cdn.jsdelivr.net/npm/pc-bootstrap4-datetimepicker@4.17/build/js/bootstrap-datetimepicker.min.js"></script>
-
-    <!-- Lastly add this package -->
-    <script src="https://cdn.jsdelivr.net/npm/vue-bootstrap-datetimepicker@5"></script>
-    <script>
-      Vue.component("date-picker", VueBootstrapDatetimePicker);
-    </script>
-    <script>
-      $.extend(true, $.fn.datetimepicker.defaults, {
-        icons: {
-          time: "ni ni-app",
-          date: "ni ni-app",
-          up: "ni ni-app",
-          down: "ni ni-app",
-          next: "ni ni-bold-right",
-          previous: "ni ni-bold-left",
-          today: "ni ni-app",
-          clear: "ni ",
-          close: "ni ni-align-left-2 "
-        }
-      });
-
-      new Vue({
-        el: "#appp",
-        data: {
-          date: null,
-          options: {
-            format: "DD/MM/YYYY ",
-            useCurrent: true,
-            showClear: true,
-            showClose: true
-          }
-        }
-      });
-    </script>
     <script src="../assets/js/lib.js"></script>
     <script src="../assets/js/services/oneDriver.js"></script>
     <script src="../assets/js/oneDriver.js"></script>

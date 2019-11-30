@@ -14,20 +14,16 @@ const getCars = async (req, res) => {
     const {
       power
     } = req.user;
-    console.log(power);
 
     if (power != "admin" && power != "s_admin") {
-      console.log(10);
       return res.status(401).end();
     }
 
-    console.log(_car.default);
     const data = await _car.default.find({}).populate("driver", "name").populate("partners.partner", "name").lean().exec();
     return res.status(200).json({
       data
     });
   } catch (e) {
-    console.log(e);
     return res.status(400).end();
   }
 };

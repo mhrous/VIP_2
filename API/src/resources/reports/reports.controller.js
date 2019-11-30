@@ -127,7 +127,6 @@ export const InfoPartner = async (req, res) => {
 
     return res.status(200).json({ data });
   } catch (e) {
-    console.log(e);
     return res.status(400).end();
   }
 };
@@ -162,7 +161,6 @@ export const InfoCar = async (req, res) => {
         }
       }
     ];
-    console.log(cars);
     cars.forEach((e, i) => {
       const style = (i + 1) % 2 ? "odd" : "even";
       let phoneString = "";
@@ -179,7 +177,6 @@ export const InfoCar = async (req, res) => {
 
     return res.status(200).json({ data });
   } catch (e) {
-    console.log(e);
     return res.status(400).end();
   }
 };

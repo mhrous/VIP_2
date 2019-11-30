@@ -7,8 +7,7 @@ const paymentSchema = new mongoose.Schema({
     required: true
   },
   amount: { type: Number, required: true },
-  date: { type: Date, required: true },
-  _type: { type: String, enum: ["D", "P"], default: "D" }
+  date: { type: Date, required: true }
 });
 
 paymentSchema.index({ date: 1 });

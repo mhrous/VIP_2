@@ -137,3 +137,4 @@ const renderTableAction = id =>
     <i class="ni ni-fat-remove  remove-table" data-id="${id}"></i>
   </div>`;
 
+const TO_JSON = obj => JSON.parse(JSON.stringify(obj));

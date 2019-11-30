@@ -3,12 +3,9 @@ import Car from "./car.model";
 export const getCars = async (req, res) => {
   try {
     const { power } = req.user;
-    console.log(power);
     if (power != "admin" && power != "s_admin") {
-      console.log(10);
       return res.status(401).end();
     }
-    console.log(Car);
     const data = await Car.find({})
       .populate("driver", "name")
       .populate("partners.partner", "name")
@@ -19,7 +16,6 @@ export const getCars = async (req, res) => {
       data
     });
   } catch (e) {
-    console.log(e);
     return res.status(400).end();
   }
 };
