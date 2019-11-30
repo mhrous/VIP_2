@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "browser-sync start --server --port 8889"
+    "start": "browser-sync start --server --port 8889 -w"
   },
   "dependencies": {
     "browser-sync": "^2.26.7"
