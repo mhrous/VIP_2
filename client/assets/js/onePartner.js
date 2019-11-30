@@ -4,17 +4,20 @@ $(document).ready(function() {
   const __DATA__ = {
     payment: [],
     account: [],
-    repairing: []
+    repairing: [],
+    expenses: []
   };
   const tableConfig = {
     paging: false,
     searching: false
   };
+  const expensesTable = $("#expenses-table").DataTable(tableConfig);
   const accountTable = $("#account-table").DataTable(tableConfig);
   const repairingTable = $("#repairing-table").DataTable(tableConfig);
 
   const initAccount = () => {};
   const initRepairing = () => {};
+  const initExpenses = () => {};
   const initPayment = () => {
     const tableNode = $("#payment-table");
     const tableConfig = {
@@ -203,10 +206,14 @@ $(document).ready(function() {
     };
   };
 
+  const initSummary = () => {};
+
   const start = () => {
+    initSummary();
     renderSiteBar();
     initAccount();
     initRepairing();
+    initExpenses();
     const { addPaymentToTable, clearPaymentTable } = initPayment();
     user = new Vue({
       el: "#user",
