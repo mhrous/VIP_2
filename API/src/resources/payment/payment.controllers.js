@@ -37,12 +37,12 @@ export const addPayment = async (req, res) => {
     if (power != "admin") {
       return res.status(401).end();
     }
-
+    console.log(req.body);
     const { user, amount, date } = req.body;
     if (!user || !amount || !date) {
       return res.status(400).json({ error: "بعض المعلومات ناقصة" });
     }
-    const { y, m, d } = date;
+    const [y, m, d] = date.split("-");
     req.body.date = new Date().setFullYear(y, m - 1, d);
     const data = await Payment.create(req.body);
 
@@ -66,7 +66,7 @@ export const editPayment = async (req, res) => {
     }
 
     if (req.body.date) {
-      const { y, m, d } = req.body.date;
+      const [y, m, d] = req.body.date.split("-");
       req.body.date = new Date().setFullYear(y, m - 1, d);
     }
 

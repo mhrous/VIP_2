@@ -10,3 +10,35 @@ const getData = ({ success, m, y }) => {
     headers
   });
 };
+
+const addPayment = ({ data, success, error }) => {
+  $.ajax({
+    type: "POST",
+    url: `${endPoint}/payment`,
+    data,
+    success,
+    error,
+    headers
+  });
+};
+
+const deletePayment = ({ id, success }) => {
+  $.ajax({
+    type: "DELETE",
+    url: `${endPoint}/payment/${id}`,
+    success,
+    headers
+  });
+};
+
+const putPayment = ({ id, data, success, error }) => {
+  $.ajax({
+    type: "PUT",
+    url: `${endPoint}/payment/${id}`,
+    success,
+    data,
+    error,
+
+    headers
+  });
+};

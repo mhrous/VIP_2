@@ -54,6 +54,7 @@ const addPayment = async (req, res) => {
       return res.status(401).end();
     }
 
+    console.log(req.body);
     const {
       user,
       amount,
@@ -66,11 +67,7 @@ const addPayment = async (req, res) => {
       });
     }
 
-    const {
-      y,
-      m,
-      d
-    } = date;
+    const [y, m, d] = date.split("-");
     req.body.date = new Date().setFullYear(y, m - 1, d);
     const data = await _payment.default.create(req.body);
     return res.status(200).json({
@@ -104,11 +101,7 @@ const editPayment = async (req, res) => {
     }
 
     if (req.body.date) {
-      const {
-        y,
-        m,
-        d
-      } = req.body.date;
+      const [y, m, d] = req.body.date.split("-");
       req.body.date = new Date().setFullYear(y, m - 1, d);
     }
 

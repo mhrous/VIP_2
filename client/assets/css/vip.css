@@ -132,3 +132,6 @@ th {
   margin: 0 !important;
   border-radius: 1rem !important ;
 }
+.bootstrap-datetimepicker-widget {
+  position: absolute !important;
+}

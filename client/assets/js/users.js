@@ -100,7 +100,6 @@ $(document).ready(function() {
       $(newRow).attr("id", obj._id);
     };
 
-
     const editFromUserTable = ({ id, data }) => {
       __ALLUSER__ = __ALLUSER__.map(e => (e._id == id ? data : e));
       const row = userTable.row("#" + id);
@@ -232,12 +231,6 @@ $(document).ready(function() {
     });
   };
 
- 
- 
- 
- 
- 
- 
   const start = () => {
     const { addToTable, editFromTable } = allUserTableInit();
     renderSiteBar();
