@@ -12,7 +12,6 @@
     />
     <link rel="stylesheet" href="../assets/vendor/nucleo/css/nucleo.css" />
 
-
     <link
       href="https://cdn.jsdelivr.net/npm/pc-bootstrap4-datetimepicker@4.17/build/css/bootstrap-datetimepicker.min.css"
       rel="stylesheet"
@@ -90,6 +89,15 @@
                   دفعات
                 </a>
               </li>
+              <li class="nav-item p-0">
+                <a
+                  class="nav-link mb-sm-3 mb-md-0 "
+                  data-toggle="tab"
+                  href="#t5"
+                >
+                  ملخص
+                </a>
+              </li>
             </ul>
 
             <div id="fffffffffff" style="position: fixed;top: 40px;left: 40px;">
@@ -102,18 +110,6 @@
                   </div>
                   <input class="form-control datepicker" type="text" />
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <div id="appp" class="container">
-            <div class="row">
-              <div class="col-md-12">
-                <date-picker
-                  name="date"
-                  v-model="date"
-                  :config="options"
-                ></date-picker>
               </div>
             </div>
           </div>
@@ -557,6 +553,10 @@
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div class="tab-pane fade " id="t4">
+              ملخص
             </div>
           </div>
         </div>
