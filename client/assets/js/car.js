@@ -1,5 +1,6 @@
 $(document).ready(function() {
   const { token, power } = testLogin("car");
+  let MainDate = null;
   let vueObj = null;
   let __ALL_CAR__ = [];
 
@@ -146,19 +147,75 @@ $(document).ready(function() {
       searching: false
     };
     const accountTable = tableNode.DataTable(tableConfig);
-  };
 
-  const header = () => {
-    const datePicker = $("#date-picker input");
-    const dataPickerNode = $("#date-picker");
+    const bulid = data => {
+      accountTable.clear().draw();
 
-    $("#car_tap").on("click", () => {
-      dataPickerNode.addClass("hide");
-    });
+      for (let obj of Object.values(data)) {
+        const expensesMax = obj.expensesMax;
 
-    $("#account_tap").on("click", () => {
-      dataPickerNode.removeClass("hide");
-    });
+        const name = obj.name;
+        const number = obj.number;
+        const countTravel = obj.travel.length;
+        let ematyTravel = 0;
+        obj.travel.forEach(e => {
+          const repairingBackValue = e.repairing.reduce(
+            (a, b) => a + (b.isGO ? 0 : b.value),
+            0
+          );
+          const repairingGoValue = e.repairing.reduce(
+            (a, b) => a + (b.isGO ? b.value : 0),
+            0
+          );
+
+          if (e.cashTo == 0 && repairingGoValue == 0) ematyTravel++;
+          if (e.cashBack == 0 && repairingBackValue == 0) ematyTravel++;
+        });
+        const numberOfTavelAbofExpenseMax = obj.travel.reduce(
+          (a, b) => a + (b.expenses > expensesMax ? 1 : 0),
+          0
+        );
+        const numberRepairing = obj.travel.reduce(
+          (a, b) => a + b.repairing.length,
+          0
+        );
+        const totalRepairing = obj.travel.reduce(
+          (a, b) => a + b.repairing.reduce((_a, _b) => _a + _b.value, 0),
+          0
+        );
+        const totalTravel = obj.travel.reduce(
+          (a, b) =>
+            a +
+            b.cashTo +
+            b.cashBack +
+            b.repairing.reduce((_a, _b) => _a + _b.value, 0),
+          0
+        );
+        const totalExpenses = obj.travel.reduce((a, b) => a + b.expenses, 0);
+        const totalExpensesOnCar = obj.expenses.reduce(
+          (a, b) => a + b.amount,
+          0
+        );
+        const caProduct = totalTravel - totalExpenses - totalExpensesOnCar;
+        accountTable.row
+          .add([
+            name,
+            number,
+            countTravel,
+            ematyTravel,
+            numberOfTavelAbofExpenseMax,
+            numberRepairing,
+            totalRepairing,
+            totalTravel,
+            totalExpenses,
+            totalExpensesOnCar,
+            caProduct
+          ])
+          .draw(false);
+      }
+    };
+
+    return { accountBulid: bulid };
   };
 
   const modalInit = ({ addToTable, editFromTable }) => {
@@ -283,11 +340,10 @@ $(document).ready(function() {
   };
 
   const start = () => {
-    header();
     renderSiteBar();
     const { addToTable, editFromTable } = allCarTableInit();
     modalInit({ addToTable, editFromTable });
-    accountInit();
+    const { accountBulid } = accountInit();
 
     getPartnerAndDriverName({
       success({ data }) {
@@ -296,6 +352,44 @@ $(document).ready(function() {
             vueObj.H_.driverName = [...vueObj.H_.driverName, e];
           else if (e.power == "P")
             vueObj.H_.partnerName = [...vueObj.H_.partnerName, e];
+        });
+      }
+    });
+
+    MainDate = new Vue({
+      el: "#MainDate",
+      data: {
+        date: moment(new Date()).format("YYYY-MM"),
+        options: {
+          format: "YYYY-MM",
+          useCurrent: true
+        }
+      },
+      watch: {
+        date(val) {
+          let [y, m] = val.split("-");
+          m = parseInt(m);
+          y = parseInt(y);
+
+          getData({
+            m,
+            y,
+            success({ data }) {
+              accountBulid(data);
+            }
+          });
+        }
+      },
+      mounted() {
+        let [y, m] = this.date.split("-");
+        m = parseInt(m);
+        y = parseInt(y);
+        getData({
+          m,
+          y,
+          success({ data }) {
+            accountBulid(data);
+          }
         });
       }
     });

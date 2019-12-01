@@ -19,7 +19,7 @@ export const onePartnerConst = async (req, res) => {
     data.user = user;
     res.json({ data });
   } catch (e) {
-    console.error(e);
+    return res.status(400).end();
   }
 };
 
@@ -52,7 +52,7 @@ export const onePartner = async (req, res) => {
     data.payment = payment;
     res.json({ data });
   } catch (e) {
-    console.error(e);
+    return res.status(400).end();
   }
 };
 
@@ -77,7 +77,7 @@ export const oneDriverConst = async (req, res) => {
     data.car = car;
     res.json({ data });
   } catch (e) {
-    console.error(e);
+    return res.status(400).end();
   }
 };
 
@@ -118,6 +118,58 @@ export const oneDriver = async (req, res) => {
     data.payment = payment;
     res.json({ data });
   } catch (e) {
-    console.error(e);
+    return res.status(400).end();
   }
 };
+
+export const carInfo = async (req, res) => {
+  try {
+    let { m, y } = req.query;
+    m = parseInt(m) - 1;
+    const data = {};
+
+    const start = getFirstOfThisMonth(m, y);
+    const end = getFirstOfNextMonth(m, y);
+    const cars = await Car.find({})
+      .lean()
+      .exec();
+    cars.forEach(c => {
+      data[c._id] = {
+        travel: [],
+        expenses: [],
+        name: c.name,
+        number: c.number,
+        expensesMax: c.expensesMax
+      };
+    });
+    const travel = await Travel.find({ date: { $gt: start, $lt: end } })
+      .populate("car", "-driver -partners")
+      .lean()
+      .exec();
+
+    travel.forEach(e => {
+      const index = e.car._id.toString();
+      data[index].travel = [...data[index].travel, e];
+    });
+    const expenses = await Expenses.find({
+      onCar: true,
+      date: { $gt: start, $lt: end }
+    })
+      .select("car amount")
+      .lean()
+      .exec();
+
+    expenses.forEach(e => {
+      const index = e.car;
+
+      data[index].expenses = [...data[index].expenses, e];
+    });
+
+    return res.json({ data });
+  } catch (e) {
+    console.log(e);
+    return res.status(400).end();
+  }
+};
+
+

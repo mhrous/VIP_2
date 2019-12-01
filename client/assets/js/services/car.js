@@ -2,6 +2,15 @@ const endPoint = "http://localhost:8888/api";
 
 const headers = {};
 
+const getData = ({ success, m, y }) => {
+  $.ajax({
+    type: "GET",
+    url: `${endPoint}/page/car_info?m=${m}&y=${y}`,
+    success,
+    headers
+  });
+};
+
 const getPartnerAndDriverName = ({ success }) => {
   $.ajax({
     type: "GET",
