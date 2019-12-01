@@ -15,6 +15,7 @@ $(document).ready(function() {
           targets: 5,
           width: "50px"
         },
+        { targets: 2, width: "100px" },
 
         { targets: 3, width: "50px" },
         { orderable: false, targets: 4, width: "70px" }

@@ -44,7 +44,6 @@ const onePartner = async (req, res) => {
     m = parseInt(m) - 1;
     const start = (0, _utils.getFirstOfThisMonth)(m, y);
     const end = (0, _utils.getFirstOfNextMonth)(m, y);
-    console.log(start.getDate(), "\n", end.getDate());
     const data = {};
     const payment = await _payment.default.find({
       user: _id,
@@ -72,11 +71,14 @@ const oneDriverConst = async (req, res) => {
     } = req.query;
     const data = {};
     const user = await _user.default.findById(_id).select("name").lean().exec();
-    const car = await _car.default.findOne({
-      driver: _id
-    }).select("-partners -driver").lean().exec();
+    const partners = await _user.default.find({
+      power: "P",
+      active: false
+    }).select("name").lean().exec();
+    const cars = await _car.default.find().select("-partners").lean().exec();
     data.user = user;
-    data.car = car;
+    data.partners = partners;
+    data.cars = cars;
     res.json({
       data
     });
@@ -97,7 +99,6 @@ const oneDriver = async (req, res) => {
     m = parseInt(m) - 1;
     const start = (0, _utils.getFirstOfThisMonth)(m, y);
     const end = (0, _utils.getFirstOfNextMonth)(m, y);
-    console.log(start.getDate(), "\n", end.getDate());
     const data = {};
     const payment = await _payment.default.find({
       user: _id,

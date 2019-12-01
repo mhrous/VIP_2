@@ -49,7 +49,7 @@ export const addExpenses = async (req, res) => {
     if (!driver || !amount || !date || !car || !_for) {
       return res.status(400).json({ error: "بعض المعلومات ناقصة" });
     }
-    const { y, m, d } = date;
+    const [y, m, d] = date.split("-");
     req.body.date = new Date().setFullYear(y, m - 1, d);
     const data = await Expenses.create(req.body);
 
@@ -74,7 +74,7 @@ export const editExpenses = async (req, res) => {
     }
 
     if (req.body.date) {
-      const { y, m, d } = req.body.date;
+      const [y, m, d] = req.body.date.split("-");
       req.body.date = new Date().setFullYear(y, m - 1, d);
     }
 

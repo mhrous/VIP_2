@@ -37,7 +37,6 @@ export const addPayment = async (req, res) => {
     if (power != "admin") {
       return res.status(401).end();
     }
-    console.log(req.body);
     const { user, amount, date } = req.body;
     if (!user || !amount || !date) {
       return res.status(400).json({ error: "بعض المعلومات ناقصة" });

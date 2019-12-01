@@ -7,6 +7,8 @@ exports.getUserName = exports.addUser = exports.getAllUser = exports.updateUser 
 
 var _user = _interopRequireDefault(require("./user.model"));
 
+var _car = _interopRequireDefault(require("../car/car.model"));
+
 var _utils = require("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -158,9 +160,15 @@ const getAllUser = async (req, res) => {
         return res.status(401).end();
     }
 
-    const data = await _user.default.find(_objectSpread({}, findQuery, {
+    let data = await _user.default.find(_objectSpread({}, findQuery, {
       active: true
     })).select(selectStr).lean().exec();
+
+    if (query.onCar) {
+      const car = await _car.default.find({}).select("driver").lean().exec();
+      data = data.filter(e => car.find(c => c.driver.toString() == e._id.toString()));
+    }
+
     return res.status(200).json({
       data
     });

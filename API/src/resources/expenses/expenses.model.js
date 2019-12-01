@@ -13,7 +13,7 @@ const exponsesSchema = new mongoose.Schema({
   },
   _onCar: { type: Boolean, default: false },
   _onDriver: { type: Boolean, default: false },
-  _onPartner: { type: Boolean, default: true },
+  _onPartner: { type: Boolean, default: false },
   partner: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
   amount: { type: Number, required: true },
   _for: { type: String, deflate: "" },

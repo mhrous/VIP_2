@@ -30,7 +30,7 @@ const exponsesSchema = new _mongoose.default.Schema({
   },
   _onPartner: {
     type: Boolean,
-    default: true
+    default: false
   },
   partner: {
     type: _mongoose.default.Schema.Types.ObjectId,

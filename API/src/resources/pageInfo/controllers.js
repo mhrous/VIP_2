@@ -28,7 +28,6 @@ export const onePartner = async (req, res) => {
 
     const start = getFirstOfThisMonth(m, y);
     const end = getFirstOfNextMonth(m, y);
-    console.log(start.getDate(), "\n", end.getDate());
     const data = {};
 
     const payment = await Payment.find({
@@ -56,13 +55,18 @@ export const oneDriverConst = async (req, res) => {
       .select("name")
       .lean()
       .exec();
-    const car = await Car.findOne({ driver: _id })
-      .select("-partners -driver")
+    const partners = await User.find({ power: "P", active: false })
+      .select("name")
+      .lean()
+      .exec();
+    const cars = await Car.find()
+      .select("-partners")
       .lean()
       .exec();
 
     data.user = user;
-    data.car = car;
+    data.partners = partners;
+    data.cars = cars;
     res.json({ data });
   } catch (e) {
     console.error(e);
@@ -76,7 +80,6 @@ export const oneDriver = async (req, res) => {
 
     const start = getFirstOfThisMonth(m, y);
     const end = getFirstOfNextMonth(m, y);
-    console.log(start.getDate(), "\n", end.getDate());
     const data = {};
 
     const payment = await Payment.find({

@@ -11,7 +11,6 @@ const getDataConst = ({ success }) => {
     headers
   });
 };
-
 const getData = ({ success, m, y }) => {
   $.ajax({
     type: "GET",
@@ -20,7 +19,6 @@ const getData = ({ success, m, y }) => {
     headers
   });
 };
-
 const addPayment = ({ data, success, error }) => {
   $.ajax({
     type: "POST",
@@ -31,7 +29,6 @@ const addPayment = ({ data, success, error }) => {
     headers
   });
 };
-
 const deletePayment = ({ id, success }) => {
   $.ajax({
     type: "DELETE",
@@ -40,11 +37,42 @@ const deletePayment = ({ id, success }) => {
     headers
   });
 };
-
 const putPayment = ({ id, data, success, error }) => {
   $.ajax({
     type: "PUT",
     url: `${endPoint}/payment/${id}`,
+    success,
+    data,
+    error,
+
+    headers
+  });
+};
+
+const addExpenses = ({ data, success, error }) => {
+  $.ajax({
+    type: "POST",
+    url: `${endPoint}/expenses`,
+    data,
+    success,
+    error,
+    headers
+  });
+};
+
+const deleteExpenses = ({ id, success }) => {
+  $.ajax({
+    type: "DELETE",
+    url: `${endPoint}/expenses/${id}`,
+    success,
+    headers
+  });
+};
+
+const putExpenses = ({ id, data, success, error }) => {
+  $.ajax({
+    type: "PUT",
+    url: `${endPoint}/expenses/${id}`,
     success,
     data,
     error,

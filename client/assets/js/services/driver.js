@@ -5,7 +5,7 @@ const headers = {};
 const getDriver = ({ success }) => {
   $.ajax({
     type: "GET",
-    url: `${endPoint}?power=D`,
+    url: `${endPoint}?power=D&onCar=1`,
     success,
     headers
   });

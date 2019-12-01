@@ -1,4 +1,5 @@
 import User from "./user.model";
+import Car from "../car/car.model";
 import { randomPassword } from "../../utils";
 
 export const me = (req, res) => {
@@ -102,10 +103,21 @@ export const getAllUser = async (req, res) => {
       default:
         return res.status(401).end();
     }
-    const data = await User.find({ ...findQuery, active: true })
+    let data = await User.find({ ...findQuery, active: true })
       .select(selectStr)
       .lean()
       .exec();
+
+    if (query.onCar) {
+      const car = await Car.find({})
+        .select("driver")
+        .lean()
+        .exec();
+
+      data = data.filter(e =>
+        car.find(c => c.driver.toString() == e._id.toString())
+      );
+    }
     return res.status(200).json({ data });
   } catch (e) {
     return res.status(400).end();

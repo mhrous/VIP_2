@@ -54,7 +54,6 @@ const addPayment = async (req, res) => {
       return res.status(401).end();
     }
 
-    console.log(req.body);
     const {
       user,
       amount,

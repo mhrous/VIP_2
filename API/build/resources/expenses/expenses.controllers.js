@@ -75,11 +75,7 @@ const addExpenses = async (req, res) => {
       });
     }
 
-    const {
-      y,
-      m,
-      d
-    } = date;
+    const [y, m, d] = date.split("-");
     req.body.date = new Date().setFullYear(y, m - 1, d);
     const data = await _expenses.default.create(req.body);
     return res.status(200).json({
@@ -113,11 +109,7 @@ const editExpenses = async (req, res) => {
     }
 
     if (req.body.date) {
-      const {
-        y,
-        m,
-        d
-      } = req.body.date;
+      const [y, m, d] = req.body.date.split("-");
       req.body.date = new Date().setFullYear(y, m - 1, d);
     }
 
