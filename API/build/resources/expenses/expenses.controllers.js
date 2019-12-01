@@ -67,7 +67,6 @@ const addExpenses = async (req, res) => {
       amount,
       date
     } = req.body;
-    console.log(req.body);
 
     if (!driver || !amount || !date || !car) {
       return res.status(400).json({
@@ -83,7 +82,6 @@ const addExpenses = async (req, res) => {
       data
     });
   } catch (e) {
-    console.log(e);
     return res.status(400).end();
   }
 };
@@ -103,7 +101,6 @@ const editExpenses = async (req, res) => {
     const {
       _id
     } = req.params;
-    console.log(req.body);
 
     if (req.body.driver || req.body.car) {
       return res.status(400).json({
@@ -123,7 +120,6 @@ const editExpenses = async (req, res) => {
       data
     });
   } catch (e) {
-    console.log(e);
     return res.status(400).end();
   }
 };

@@ -2,6 +2,7 @@ import User from "../user/user.model";
 import Payment from "../payment/payment.model";
 import Expenses from "../expenses/expenses.model";
 import Car from "../car/car.model";
+import Travel from "../travel/travel.model";
 import { getFirstOfThisMonth, getFirstOfNextMonth } from "../../utils";
 
 //partner
@@ -104,6 +105,15 @@ export const oneDriver = async (req, res) => {
       .populate("partner", "name")
       .lean()
       .exec();
+
+    const travel = await Travel.find({
+      driver: _id,
+      date: { $gt: start, $lt: end }
+    })
+      .lean()
+      .exec();
+
+    data.travel = travel;
     data.expenses = expenses;
     data.payment = payment;
     res.json({ data });

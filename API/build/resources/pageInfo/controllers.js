@@ -13,6 +13,8 @@ var _expenses = _interopRequireDefault(require("../expenses/expenses.model"));
 
 var _car = _interopRequireDefault(require("../car/car.model"));
 
+var _travel = _interopRequireDefault(require("../travel/travel.model"));
+
 var _utils = require("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -124,6 +126,14 @@ const oneDriver = async (req, res) => {
         $lt: end
       }
     }).populate("partner", "name").lean().exec();
+    const travel = await _travel.default.find({
+      driver: _id,
+      date: {
+        $gt: start,
+        $lt: end
+      }
+    }).lean().exec();
+    data.travel = travel;
     data.expenses = expenses;
     data.payment = payment;
     res.json({

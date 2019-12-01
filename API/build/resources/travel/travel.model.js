@@ -24,11 +24,11 @@ const travelSchema = new _mongoose.default.Schema({
     type: Date,
     required: true
   },
-  totalTo: {
+  cashTo: {
     type: Number,
     default: 0
   },
-  totalBack: {
+  cashBack: {
     type: Number,
     default: 0
   },
@@ -57,9 +57,8 @@ const travelSchema = new _mongoose.default.Schema({
         ref: "user",
         required: true
       },
-      _type: {
-        type: String,
-        enum: ["g", "b"]
+      isGO: {
+        type: Boolean
       },
       from: {
         type: String

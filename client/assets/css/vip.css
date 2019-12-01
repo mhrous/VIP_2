@@ -110,7 +110,6 @@ th {
 .edit-table:hover {
   color: #5e72e4;
   transform: translateY(-1px);
-  
 }
 
 .remove-table:hover {
@@ -135,4 +134,8 @@ th {
 }
 .bootstrap-datetimepicker-widget {
   position: absolute !important;
+}
+
+#travel-modal #modal .custom-toggle input.custom-toggle-slider {
+  border: 1px solid #5e72e4!important;
 }

@@ -130,20 +130,21 @@
             </div>
 
             <div class="tab-content">
-              <div class="tab-pane fade show active " id="t1">
+              <div class="tab-pane fade  " id="t1">
                 <table
-                  id="all-drivers-table"
+                  id="travel-table"
                   class="table table-striped table-bordered"
                   cellspacing="0"
                   width="100%"
                 >
                   <thead>
                     <tr>
-                      <th>السيارة</th>
                       <th>تاريخ</th>
                       <th>مصروف</th>
-                      <th>ذهاب</th>
-                      <th>اياب</th>
+                      <th> ذهاب كاش</th>
+                      <th>اياب كاش</th>
+                      <th>دين</th>
+
                       <th>صافي</th>
                       <th></th>
                     </tr>
@@ -160,7 +161,7 @@
                 <div id="travel-modal">
                   <!-- Modal -->
                   <div class="modal fade" id="modal" role="dialog">
-                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                    <div class="modal-dialog modal-lg   ">
                       <div class="modal-content">
                         <div class="modal-header">
                           <h5 class="modal-title">
@@ -179,19 +180,25 @@
                             <div
                               class=" col-6 input-group input-group-alternative"
                             >
-                              <input
-                                placeholder="السائق   "
-                                type="text"
-                                class="form-control"
-                              />
+                              <date-picker
+                                value="date"
+                                name="date"
+                                v-model="date"
+                                :config="H_.options"
+                                @keyup.enter="ok"
+                              ></date-picker>
                             </div>
                             <div
                               class=" col-6 input-group input-group-alternative"
                             >
                               <input
-                                placeholder="السيارة  "
-                                type="text"
+                                placeholder="المصروف  "
+                                type="number"
+                                min="0"
+                                step="100"
+                                v-model="expenses"
                                 class="form-control"
+                                @keyup.enter="ok"
                               />
                             </div>
                           </div>
@@ -201,28 +208,66 @@
                               class=" col-6 input-group input-group-alternative"
                             >
                               <input
-                                placeholder="التاريخ   "
-                                type="text"
+                                placeholder="ذهاب كاش"
+                                type="number"
+                                min="0"
+                                step="100"
+                                v-model="cashTo"
                                 class="form-control"
+                                @keyup.enter="ok"
                               />
                             </div>
                             <div
                               class=" col-6 input-group input-group-alternative"
                             >
                               <input
-                                placeholder="المصروف  "
-                                type="text"
+                                placeholder="اياب كاش"
+                                type="number"
+                                min="0"
+                                step="100"
+                                v-model="cashBack"
                                 class="form-control"
+                                @keyup.enter="ok"
                               />
                             </div>
                           </div>
 
-                          <div class="row mb-3">
-                            وصول الدين:
-                          </div>
-
-                          <div class="card mb-3" v-for="a in t">
+                          <div class="card mb-1" v-for="r in repairing">
                             <div class="card-body">
+                              <div class="form-group row has-danger mb-3">
+                                <div
+                                  class=" col-6 input-group input-group-alternative"
+                                >
+                                <select
+                                aria-placeholder="الشريك"
+                                v-model="r.partner"
+                                class="form-control form-control-lg"
+                              >
+                                <option value="" disabled selected
+                                  >اختار الشريك</option
+                                >
+
+                                <option
+                                  v-for="p in H_.partner"
+                                  v-bind:value="p._id"
+                                >
+                                  {{ p.name }}
+                                </option>
+                              </select>
+                                </div>
+                                <div
+                                  class=" col-6 input-group input-group-alternative"
+                                >
+                                  <input
+                                    placeholder="من قبل   "
+                                    type="text"
+                                    v-model="r.from"
+                                    @keyup.enter="ok"
+                                    class="form-control"
+                                  />
+                                </div>
+                              </div>
+
                               <div class="form-group row has-danger mb-3">
                                 <div
                                   class=" col-6 input-group input-group-alternative"
@@ -230,6 +275,8 @@
                                   <input
                                     placeholder="اسم الزبون   "
                                     type="text"
+                                    v-model="r.clientName"
+                                    @keyup.enter="ok"
                                     class="form-control"
                                   />
                                 </div>
@@ -239,49 +286,50 @@
                                   <input
                                     placeholder="رقم الزبون  "
                                     type="text"
+                                    v-model="r.clientPhone"
+                                    @keyup.enter="ok"
                                     class="form-control"
                                   />
                                 </div>
                               </div>
+
                               <div class="form-group row has-danger mb-3">
                                 <div
                                   class=" col-6 input-group input-group-alternative"
-                                >
-                                  <input
-                                    placeholder="مكتب    "
-                                    type="text"
-                                    class="form-control"
-                                  />
-                                </div>
-                                <div
-                                  class=" col-6 input-group input-group-alternative"
-                                >
-                                  <input
-                                    placeholder="من قبل   "
-                                    type="text"
-                                    class="form-control"
-                                  />
-                                </div>
-                              </div>
-                              <div class="form-group row has-danger mb-3">
-                                <div
-                                  class=" col-10 input-group input-group-alternative"
                                 >
                                   <input
                                     placeholder="القيمة    "
-                                    type="text"
+                                    type="number"
+                                    min="0"
+                                    step="100"
+                                    v-model="r.value"
                                     class="form-control"
+                                    @keyup.enter="ok"
                                   />
                                 </div>
-                                <div class=" col-2 ">
-                                  <button
-                                    @click="()=>removeT(a.id)"
-                                    type="button"
-                                    class="btn btn-danger"
-                                  >
-                                    <span>&times;</span>
-                                  </button>
+
+                                <div
+                                  class=" col-6 input-group "
+                                  style="padding-top: 10px;"
+                                >
+                                  ذهاب
+                                  <label class="custom-toggle ml-3 mr-3">
+                                    <input
+                                      type="checkbox"
+                                      v-model="r.isGO"
+                                    />
+                                    <span
+                                      class="custom-toggle-slider rounded-circle"
+                                    >
+                                    </span>
+                                  </label>
+                                  اياب
                                 </div>
+                              </div>
+                              <div class=" col-12 " style="text-align: center;">
+                                <button @click="()=>removeRepairing(r._id)" type="button" class="btn btn-danger">
+                                  <span>&times;</span>
+                                </button>
                               </div>
                             </div>
                           </div>
@@ -291,31 +339,10 @@
                               type="button"
                               class="btn btn-secondary "
                               style="margin: auto;"
-                              @click="addT"
+                              @click="addRepairing"
                             >
                               اضافة وصل دين
                             </button>
-                          </div>
-
-                          <div class="form-group row has-danger mb-3">
-                            <div
-                              class=" col-6 input-group input-group-alternative"
-                            >
-                              <input
-                                placeholder="ذهاب   "
-                                type="text"
-                                class="form-control"
-                              />
-                            </div>
-                            <div
-                              class=" col-6 input-group input-group-alternative"
-                            >
-                              <input
-                                placeholder="اياب  "
-                                type="text"
-                                class="form-control"
-                              />
-                            </div>
                           </div>
                         </div>
                         <div class="modal-footer">
@@ -326,8 +353,8 @@
                           >
                             الغاء
                           </button>
-                          <button type="button" class="btn btn-primary">
-                            اضافة
+                          <button @click="ok" type="button" class="btn btn-primary">
+                            {{H_.okBtnTitle}}
                           </button>
                         </div>
                       </div>
@@ -335,9 +362,9 @@
                   </div>
                 </div>
               </div>
-              <div class="tab-pane fade " id="t2">
+              <div class="tab-pane fade  show active" id="t2">
                 <table
-                  id="account-table"
+                  id="repairing-table"
                   class="table table-striped table-bordered"
                   cellspacing="0"
                   width="100%"
@@ -463,13 +490,14 @@
                           </div>
 
                           <div class="form-group row has-danger mb-3">
-                            <div class="col-6 input-group input-group-alternative">
+                            <div
+                              class="col-6 input-group input-group-alternative"
+                            >
                               <select
                                 aria-placeholder="الشريك"
                                 v-model="partner"
                                 class="form-control form-control-lg"
-                               :disabled="partner==false"
-                                
+                                :disabled="partner==false"
                               >
                                 <option value="" disabled selected
                                   >اختار الشريك</option
@@ -631,7 +659,7 @@
     <script src="../assets/vendor/bootstrap-sweetalert/js/bootstrap-sweetalert.min.js"></script>
     <script src="../assets/vendor/dataTables/js/dataTables.min.js"></script>
     <script src="../assets/vendor/dataTables/js/dataTables.bootstrap4.min.js"></script>
-    <script src="../assets/vendor/vue/vue.min.js"></script>
+    <script src="../assets/vendor/vue/vue.js"></script>
     <script src="../assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
     <script src="../assets/js/lib.js"></script>
     <script src="../assets/js/services/oneDriver.js"></script>

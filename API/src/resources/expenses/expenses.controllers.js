@@ -46,7 +46,6 @@ export const addExpenses = async (req, res) => {
     }
 
     const { driver, car, amount, date } = req.body;
-    console.log(req.body);
     if (!driver || !amount || !date || !car) {
       return res.status(400).json({ error: "بعض المعلومات ناقصة" });
     }
@@ -62,7 +61,6 @@ export const addExpenses = async (req, res) => {
       data
     });
   } catch (e) {
-    console.log(e);
     return res.status(400).end();
   }
 };
@@ -74,7 +72,6 @@ export const editExpenses = async (req, res) => {
     }
 
     const { _id } = req.params;
-    console.log(req.body);
 
     if (req.body.driver || req.body.car) {
       return res.status(400).json({ error: "لا يمكنك  تعديل هذا المعلمومات " });
@@ -95,7 +92,6 @@ export const editExpenses = async (req, res) => {
 
     return res.status(200).json({ data });
   } catch (e) {
-    console.log(e);
     return res.status(400).end();
   }
 };

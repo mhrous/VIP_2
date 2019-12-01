@@ -1,3 +1,5 @@
+const TRUE = "<p style='color:#5e72e4; text-align: center;'>&#10004;</p>";
+const FALSE = "<p style='color:#f5365c; text-align: center;'>&#10008;</p>";
 const changeLocation = (depth, newPath) => {
   let array = location.href.split("/");
   array = array.slice(0, array.length - depth);

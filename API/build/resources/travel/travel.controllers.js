@@ -63,11 +63,7 @@ const addTravel = async (req, res) => {
 
     req.body.createdBy = idUser;
     req.body.const = power == "admin" ? true : false;
-    const {
-      y,
-      m,
-      d
-    } = req.body.date;
+    const [y, m, d] = req.body.date.split("-");
     req.body.date = new Date().setFullYear(y, m - 1, d);
     const data = await _travel.default.create(req.body);
     return res.status(200).json({
@@ -98,11 +94,7 @@ const editTravel = async (req, res) => {
     }
 
     if (req.body.date) {
-      const {
-        y,
-        m,
-        d
-      } = req.body.date;
+      const [y, m, d] = req.body.date.split("-");
       req.body.date = new Date().setFullYear(y, m - 1, d);
     }
 

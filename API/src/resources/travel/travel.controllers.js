@@ -61,7 +61,7 @@ export const addTravel = async (req, res) => {
     }
     req.body.createdBy = idUser;
     req.body.const = power == "admin" ? true : false;
-    const { y, m, d } = req.body.date;
+    const [y, m, d] = req.body.date.split("-");
     req.body.date = new Date().setFullYear(y, m - 1, d);
 
     const data = await Travel.create(req.body);
@@ -97,13 +97,14 @@ export const editTravel = async (req, res) => {
       return res.status(401).end();
     }
     if (req.body.date) {
-      const { y, m, d } = req.body.date;
+      const [y, m, d] = req.body.date.split("-");
       req.body.date = new Date().setFullYear(y, m - 1, d);
     }
 
     const data = await Travel.findByIdAndUpdate(_id, req.body, {
       new: true
     })
+
       .lean()
       .exec();
 

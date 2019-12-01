@@ -80,3 +80,35 @@ const putExpenses = ({ id, data, success, error }) => {
     headers
   });
 };
+
+const addTravel = ({ data, success, error }) => {
+  $.ajax({
+    type: "POST",
+    url: `${endPoint}/travel`,
+    data,
+    success,
+    error,
+    headers
+  });
+};
+
+const deleteTravel = ({ id, success }) => {
+  $.ajax({
+    type: "DELETE",
+    url: `${endPoint}/travel/${id}`,
+    success,
+    headers
+  });
+};
+
+const putTravel = ({ id, data, success, error }) => {
+  $.ajax({
+    type: "PUT",
+    url: `${endPoint}/travel/${id}`,
+    success,
+    data,
+    error,
+
+    headers
+  });
+};

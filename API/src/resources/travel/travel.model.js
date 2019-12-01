@@ -12,8 +12,8 @@ const travelSchema = new mongoose.Schema({
     required: true
   },
   date: { type: Date, required: true },
-  totalTo: { type: Number, default: 0 },
-  totalBack: { type: Number, default: 0 },
+  cashTo: { type: Number, default: 0 },
+  cashBack: { type: Number, default: 0 },
   expenses: { type: Number, default: 0 },
   repairing: {
     type: [
@@ -27,7 +27,7 @@ const travelSchema = new mongoose.Schema({
           ref: "user",
           required: true
         },
-        _type: { type: String, enum: ["g", "b"] },
+        isGO: { type: Boolean},
         from: { type: String }
       }
     ]

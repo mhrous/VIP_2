@@ -5,7 +5,321 @@ $(document).ready(function() {
     cars: [],
     partners: [],
     payment: [],
-    expenses: []
+    expenses: [],
+    travel: []
+  };
+
+  const initTravel = () => {
+    let vueObj;
+    const tableNode = $("#travel-table");
+    const repairingTable = $("#repairing-table");
+    const _repairingTable = repairingTable.DataTable({
+      paging: false,
+      searching: false
+    });
+    const addToRepairingTable = data => {
+      data.repairing.forEach(obj => {
+        const newRow = _repairingTable.row
+          .add([
+            moment(obj.date).format("YYYY-MM-DD"),
+            obj.clientName || FALSE,
+            obj.clientPhone || FALSE,
+            ` <a href="./onePartner.html?_id=${obj.partner}">${
+              __DATA__.partners.find(c => c._id == obj.partner).name
+            }</a>`,
+            obj.from || FALSE,
+            obj.value
+          ])
+          .draw(false)
+          .node();
+        $(newRow).attr("id", new Date(obj._id).getTime());
+      });
+    };
+    const removeFromRepairingTable = data => {
+      console.log(data, "88888888888");
+      data.repairing.forEach(obj => {
+        const row = _repairingTable.row(`#${new Date(obj._id).getTime()}`);
+
+        row.remove().draw();
+      });
+    };
+    const editFromRepairingTable = data => {
+      data.forEach(obj => {
+        const row = _repairingTable.row(`#${new Date(obj._id).getTime()}`);
+        const rowNode = row
+          .data([
+            moment(obj.date).format("YYYY-MM-DD"),
+            obj.clientName || FALSE,
+            obj.clientPhone || FALSE,
+            ` <a href="./onePartner.html?_id=${obj.partner}">${
+              __DATA__.partners.find(c => c._id == obj.partner).name
+            }</a>`,
+            obj.from || FALSE,
+            obj.value
+          ])
+          .draw(false);
+      });
+    };
+
+    const tableConfig = {
+      paging: false,
+      searching: false,
+      columnDefs: [{ targets: [0, 1, 2, 3, 5, 6], width: "75px" }]
+    };
+    const travelTable = tableNode.DataTable(tableConfig);
+    const renderRepairing = array => {
+      if (array.length == 0) return FALSE;
+      let str = "<div>";
+      array.forEach(e => {
+        console.log(
+          __DATA__.partners.find(c => c._id == e.partner),
+          TO_JSON(__DATA__.partners)
+        );
+        str += `<p> ${
+          __DATA__.partners.find(c => c._id == e.partner).name
+        } : (${e.value})</p>`;
+      });
+      str += "</div>";
+      return str;
+    };
+    const getRes = obj =>
+      obj.cashTo +
+      obj.cashBack +
+      obj.repairing.reduce((a, b) => a + b.value, 0) -
+      obj.expenses;
+
+    $("body").on("click", "#travel-table .remove-table", function() {
+      const id = $(this).data("id");
+      const row = travelTable.row("#" + $(this).data("id"));
+      const index = __DATA__.travel.findIndex(e => e._id == id);
+      swal(
+        {
+          title: `  هل تريد حذف السفرة `,
+          type: "info",
+          showCancelButton: true,
+          confirmButtonClass: "btn-danger",
+          confirmButtonText: "نعم",
+          cancelButtonText: "لا"
+        },
+        function(isConfirm) {
+          if (isConfirm) {
+            deleteTravel({
+              id,
+              success() {
+                swal("حذف", "", "success");
+                row.remove().draw();
+                removeFromRepairingTable(__DATA__.travel[index]);
+                __DATA__.travel = [
+                  ...__DATA__.travel.slice(0, index),
+                  ...__DATA__.travel.slice(index + 1)
+                ];
+              }
+            });
+          }
+        }
+      );
+    });
+    $("body").on("click", "#travel-table .edit-table", function() {
+      const id = $(this).data("id");
+      const data = __DATA__.travel.find(e => e._id == id);
+
+      $("#travel-modal #modal").modal("show");
+      vueObj.H_.title = "تعديل  السفرة";
+      vueObj.H_.edit = true;
+      vueObj.H_.okBtnTitle = "تعديل";
+      vueObj.H_.partner = __DATA__.partners;
+
+      vueObj.H_.id = id;
+      vueObj.date = data.date;
+      vueObj.expenses = data.expenses;
+      vueObj.cashTo = data.cashTo;
+      vueObj.cashBack = data.cashBack;
+      vueObj.repairing = data.repairing;
+    });
+
+    const addToTravelTable = obj => {
+      __DATA__.travel = [...__DATA__.travel, obj];
+      addToRepairingTable(obj);
+      const newRow = travelTable.row
+        .add([
+          moment(obj.date).format("YYYY-MM-DD"),
+          obj.expenses,
+          obj.cashTo,
+          obj.cashBack,
+          renderRepairing(obj.repairing),
+          getRes(obj),
+          renderTableAction(obj._id)
+        ])
+        .draw(false)
+        .node();
+      $(newRow).attr("id", obj._id);
+    };
+
+    const editFromTravelTable = ({ id, data }) => {
+      __DATA__.travel = __DATA__.travel.map(e => (e._id == id ? data : e));
+      const index = __DATA__.travel.findIndex(e => e._id == id);
+
+      const row = travelTable.row("#" + id);
+      if (
+        new Date(data.date).getMonth() == new Date(MainDate.date).getMonth()
+      ) {
+        editFromRepairingTable(data.repairing);
+        const rowNode = row
+          .data([
+            moment(data.date).format("YYYY-MM-DD"),
+            data.expenses,
+            data.cashTo,
+            data.cashBack,
+            renderRepairing(data.repairing),
+
+            "",
+            renderTableAction(data._id)
+          ])
+          .draw(false);
+      } else {
+        row.remove().draw();
+        removeFromRepairingTable(__DATA__.travel[index]);
+
+        __DATA__.travel = [
+          ...__DATA__.travel.slice(0, index),
+          ...__DATA__.travel.slice(index + 1)
+        ];
+      }
+    };
+    const clearTable = () => {
+      _repairingTable.clear().draw();
+      travelTable.clear().draw();
+      __DATA__.travel = [];
+    };
+
+    const modalInit = () => {
+      const validTravel = obj =>
+        obj.expenses &&
+        obj.date &&
+        !obj.repairing.find(e => !e.partner || !e.value);
+
+      vueObj = new Vue({
+        el: "#travel-modal #modal",
+        data: {
+          H_: {
+            title: "",
+            okBtnTitle: "",
+            edit: null,
+
+            options: {
+              format: "YYYY-MM-DD",
+              useCurrent: true
+            }
+          },
+
+          date: null,
+          expenses: null,
+          cashTo: 0,
+          cashBack: 0,
+          repairing: []
+        },
+        methods: {
+          addRepairing() {
+            this.repairing = [
+              ...this.repairing,
+              {
+                _id: new Date().getTime(),
+                partner: null,
+                from: null,
+                clientPhone: null,
+                clientName: null,
+                value: 0,
+                isGO: true
+              }
+            ];
+          },
+          removeRepairing(_id) {
+            this.repairing = this.repairing.filter(e => e._id !== _id);
+          },
+
+          ok() {
+            const obj = TO_JSON(this.$data);
+            delete obj.H_;
+            obj.date = moment(obj.date).format("YYYY-MM-DD");
+
+            if (!validTravel(obj)) {
+              swal({
+                title: "بعض الحقول ناقصة",
+                type: "warning",
+                confirmButtonText: "اعد التعبئة",
+                closeOnConfirm: false
+              });
+              return;
+            }
+            if (this.H_.edit) {
+              const id = this.H_.id;
+
+              putTravel({
+                id,
+                data: obj,
+                success({ data }) {
+                  editFromTravelTable({ data, id });
+                },
+                error(e) {
+                  swal({
+                    title: e.responseJSON.error,
+                    type: "info",
+                    confirmButtonText: "اعد التعبئة",
+                    closeOnConfirm: false
+                  });
+                  return;
+                }
+              });
+            } else {
+              obj.driver = user.user._id;
+              obj.car = user.car._id;
+
+              addTravel({
+                data: obj,
+                success({ data }) {
+                  if (
+                    new Date(data.date).getMonth() ==
+                    new Date(MainDate.date).getMonth()
+                  )
+                    addToTravelTable(data);
+                },
+                error(e) {
+                  swal({
+                    title: e.responseJSON.error,
+                    type: "info",
+                    confirmButtonText: "اعد التعبئة",
+                    closeOnConfirm: false
+                  });
+                  return;
+                }
+              });
+            }
+            $("#travel-modal #modal").modal("hide");
+          }
+        }
+      });
+
+      const newTravelBtn = $("#new-travel");
+      const modalNode = $("#travel-modal #modal");
+      newTravelBtn.on("click", () => {
+        modalNode.modal("show");
+        vueObj.H_.title = "اضافة سفرة";
+        vueObj.H_.edit = false;
+        vueObj.H_.okBtnTitle = "اضافة";
+        vueObj.H_.partner = __DATA__.partners;
+
+        vueObj.date = moment().format("YYYY-MM-DD");
+        vueObj.expenses = null;
+        vueObj.cashTo = 0;
+        vueObj.cashBack = 0;
+        vueObj.repairing = [];
+      });
+    };
+    modalInit();
+    return {
+      addTravelToTable: addToTravelTable,
+      clearTravelTable: clearTable
+    };
   };
 
   const initPayment = () => {
@@ -96,7 +410,10 @@ $(document).ready(function() {
         ];
       }
     };
-    const clearTable = () => paymentTable.clear().draw();
+    const clearTable = () => {
+      paymentTable.clear().draw();
+      __DATA__.payment = [];
+    };
 
     const modalInit = () => {
       const validUser = obj => obj.amount && obj.date;
@@ -433,6 +750,7 @@ $(document).ready(function() {
     renderSiteBar();
     const { addExpensesToTable, clearExpensesTable } = initExpenses();
     const { addPaymentToTable, clearPaymentTable } = initPayment();
+    const { addTravelToTable, clearTravelTable } = initTravel();
 
     user = new Vue({
       el: "#user",
@@ -459,11 +777,14 @@ $(document).ready(function() {
           getData({
             m,
             y,
-            success({ data: { payment, expenses } }) {
+            success({ data: { payment, expenses, travel } }) {
               clearPaymentTable();
               clearExpensesTable();
+              clearTravelTable();
+              console.log(travel);
               for (let p of payment) addPaymentToTable(p);
               for (let p of expenses) addExpensesToTable(p);
+              for (let t of travel) addTravelToTable(t);
             }
           });
         }
@@ -472,24 +793,21 @@ $(document).ready(function() {
         let [y, m] = this.date.split("-");
         m = parseInt(m);
         y = parseInt(y);
-        getData({
-          m,
-          y,
-          success({ data: { payment, expenses } }) {
-            for (let p of expenses) addExpensesToTable(p);
-            for (let p of payment) addPaymentToTable(p);
-          }
-        });
-        console.log("9999999999999999");
 
         getDataConst({
           success({ data: { car, partners } }) {
             user.user = car.driver;
-            console.log(car, "9999999999999999");
-            __DATA__.cars = car;
             __DATA__.partners = partners;
-
             user.car = car;
+            getData({
+              m,
+              y,
+              success({ data: { payment, expenses, travel } }) {
+                for (let p of expenses) addExpensesToTable(p);
+                for (let p of payment) addPaymentToTable(p);
+                for (let t of travel) addTravelToTable(t);
+              }
+            });
           }
         });
       }
