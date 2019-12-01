@@ -1,3 +1,4 @@
+let i = 1;
 $(document).ready(function() {
   const { token, power } = testLogin("oneDriver");
   let user, MainDate;
@@ -515,8 +516,6 @@ $(document).ready(function() {
   };
 
   const initExpenses = () => {
-    const TRUE = "<p style='color:#5e72e4; text-align: center;'>&#10004;</p>";
-    const FALSE = "<p style='color:#f5365c; text-align: center;'>&#10008;</p>";
     const renderPartnerLink = ({ _id, name }) => `
     <a href="./onePartner.html?_id=${_id}">${name}</a>
     `;
@@ -746,11 +745,230 @@ $(document).ready(function() {
     };
   };
 
+  initSummary = () => {
+    const summary = $("#summary");
+    const countTravel = __DATA__.travel.length;
+    const expensesMax = user.car.expensesMax;
+    const numberOfTavelAbofExpenseMax = __DATA__.travel.reduce(
+      (a, b) => a + (b.expenses > expensesMax ? 1 : 0),
+      0
+    );
+    const numberRepairing = __DATA__.travel.reduce(
+      (a, b) => a + b.repairing.length,
+      0
+    );
+    const totalTravel = __DATA__.travel.reduce(
+      (a, obj) =>
+        a +
+        obj.cashTo +
+        obj.cashBack +
+        obj.repairing.reduce((_a, _b) => _a + _b.value, 0),
+      0
+    );
+
+    const totalExpenses = __DATA__.travel.reduce(
+      (a, obj) => a + obj.expenses,
+      0
+    );
+    const totalExpensesOnDriver = __DATA__.expenses.reduce(
+      (a, b) => a + (b.onDriver ? b.amount : 0),
+      0
+    );
+    const totalExpensesOnCar = __DATA__.expenses.reduce(
+      (a, b) => a + (b.onCar ? b.amount : 0),
+      0
+    );
+    const totalRepairing = __DATA__.travel.reduce(
+      (a, obj) => a + obj.repairing.reduce((_a, _b) => _a + _b.value, 0),
+      0
+    );
+    const totalPayment = __DATA__.payment.reduce((a, b) => a + b.amount, 0);
+
+    const getFromUser =
+      totalTravel -
+      totalExpenses -
+      totalExpensesOnDriver -
+      totalRepairing -
+      totalPayment;
+    const caProduct = totalTravel - totalExpenses - totalExpensesOnCar;
+    let ematyTravel = 0;
+    __DATA__.travel.forEach(e => {
+      const repairingBackValue = e.repairing.reduce(
+        (a, b) => a + (b.isGO ? 0 : b.value),
+        0
+      );
+      const repairingGoValue = e.repairing.reduce(
+        (a, b) => a + (b.isGO ? b.value : 0),
+        0
+      );
+
+      if (e.cashTo == 0 && repairingGoValue == 0) ematyTravel++;
+      if (e.cashBack == 0 && repairingBackValue == 0) ematyTravel++;
+    });
+
+    str = `
+ 
+    <div class="card  shadow p-2 mb-3">
+    <div class="card-header">
+      <h4 style="color:  #5e72e4; text-align: center;">صافي السيارة</h4>
+    </div>
+    <div class="card-body" style="text-align: right;">
+      <div class="row">
+        <div class="col-9">
+          <h4 style="color:  #5e72e4; ">سفرات</h4>
+        </div>
+        <div class="col-3">
+          <h4 style="color:  #5e72e4; ">${totalTravel}</h4>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-9">
+          <h4 style="color:  #5e72e4; ">مصروف</h4>
+        </div>
+        <div class="col-3">
+          <h4 style="color:  #5e72e4; ">${totalExpenses}</h4>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-9">
+          <h4 style="color:  #5e72e4; ">تصليح</h4>
+        </div>
+        <div class="col-3">
+          <h4 style="color:  #5e72e4; ">${totalExpensesOnCar}</h4>
+        </div>
+      </div>
+    </div>
+  
+    <div class="card-footer">
+      <div class="row">
+      
+        <div class="col-9"></div>
+        <div class="col-3" style="text-align: right;">
+          <h4 style="color:  #5e72e4;">${caProduct}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+ 
+    <div class="card shadow mb-3">
+    <div class="card-header">
+      <h4 style="color:  #5e72e4; text-align: center;">معلومات السائق</h4>
+    </div>
+    <div class="card-body" style="text-align: right;">
+      <div class="row">
+        <div class="col-6">
+          <div class="row mb-3">
+            <div class="col-9">
+              <h4 class="mb-3">عدد السفرات :</h4>
+            </div>
+            <div class="col-3">
+              <h4 style="color:  #5e72e4;">${countTravel}</h4>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-9">
+              <h4 class="mb-3">عدد السفرات الفارغة :</h4>
+            </div>
+            <div class="col-3">
+              <h4 style="color:  #5e72e4;">${ematyTravel}</h4>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-9">
+              <h4 class="mb-3">تجاوز المصروف الاقصى (${expensesMax}) :</h4>
+            </div>
+            <div class="col-3">
+              <h4 style="color:  #5e72e4;">${numberOfTavelAbofExpenseMax}</h4>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-9">
+              <h4 class="mb-3">عدد ايصالات الدين :</h4>
+            </div>
+            <div class="col-3">
+              <h4 style="color:  #5e72e4;">${numberRepairing}</h4>
+            </div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="mb-3 row">
+            <div class="col-9">
+              <h4 class="mb-3">قيمة السفرات :</h4>
+            </div>
+            <div class="col-3">
+              <h4 style="color:  #5e72e4;">${totalTravel}</h4>
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <div class="col-9">
+              <h4 class="mb-3">اجمالي المصروف :</h4>
+            </div>
+            <div class="col-3">
+              <h4 style="color:  #5e72e4;">${totalExpenses}</h4>
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <div class="col-9">
+              <h4 class="mb-3">
+                اجمالي التصليحات دفعها السائق :
+              </h4>
+            </div>
+            <div class="col-3">
+              <h4 style="color:  #5e72e4;">${totalExpensesOnDriver}</h4>
+            </div>
+          </div>
+  
+          <hr />
+          <hr />
+  
+          <div class="mb-3 row">
+            <div class="col-9">
+              <h4 class="mb-3">اجمالي وصول الدين :</h4>
+            </div>
+            <div class="col-3">
+              <h4 style="color:  #5e72e4;">${totalRepairing}</h4>
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <div class="col-9">
+              <h4 class="mb-3">اجمالي الدفعات :</h4>
+            </div>
+            <div class="col-3">
+              <h4 style="color:  #5e72e4;">${totalPayment}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer" style="text-align:right;">
+      <div class="mb-3 row">
+        <div class="col-6"></div>
+        <div class="col-6 row">
+        <div class="col-9">
+        <h4 class="mb-3">المبلغ الواجب قبضه :</h4>
+      </div>
+      <div class="col-3">
+        <h4 style="color:  #5e72e4;">${getFromUser}</h4>
+      </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+  
+
+    `;
+    summary.html(str);
+  };
   const start = () => {
     renderSiteBar();
     const { addExpensesToTable, clearExpensesTable } = initExpenses();
     const { addPaymentToTable, clearPaymentTable } = initPayment();
     const { addTravelToTable, clearTravelTable } = initTravel();
+
+    $("#tap-summary").on("click", initSummary);
 
     user = new Vue({
       el: "#user",
@@ -785,6 +1003,7 @@ $(document).ready(function() {
               for (let p of payment) addPaymentToTable(p);
               for (let p of expenses) addExpensesToTable(p);
               for (let t of travel) addTravelToTable(t);
+              initSummary();
             }
           });
         }
@@ -797,8 +1016,10 @@ $(document).ready(function() {
         getDataConst({
           success({ data: { car, partners } }) {
             user.user = car.driver;
+            __DATA__.car = car;
             __DATA__.partners = partners;
             user.car = car;
+
             getData({
               m,
               y,
@@ -806,6 +1027,7 @@ $(document).ready(function() {
                 for (let p of expenses) addExpensesToTable(p);
                 for (let p of payment) addPaymentToTable(p);
                 for (let t of travel) addTravelToTable(t);
+                initSummary();
               }
             });
           }
