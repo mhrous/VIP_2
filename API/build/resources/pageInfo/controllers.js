@@ -9,6 +9,8 @@ var _user = _interopRequireDefault(require("../user/user.model"));
 
 var _payment = _interopRequireDefault(require("../payment/payment.model"));
 
+var _car = _interopRequireDefault(require("../car/car.model"));
+
 var _utils = require("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -70,7 +72,11 @@ const oneDriverConst = async (req, res) => {
     } = req.query;
     const data = {};
     const user = await _user.default.findById(_id).select("name").lean().exec();
+    const car = await _car.default.findOne({
+      driver: _id
+    }).select("-partners -driver").lean().exec();
     data.user = user;
+    data.car = car;
     res.json({
       data
     });

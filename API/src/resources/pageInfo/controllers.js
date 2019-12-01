@@ -1,5 +1,6 @@
 import User from "../user/user.model";
 import Payment from "../payment/payment.model";
+import Car from "../car/car.model";
 import { getFirstOfThisMonth, getFirstOfNextMonth } from "../../utils";
 
 //partner
@@ -55,8 +56,13 @@ export const oneDriverConst = async (req, res) => {
       .select("name")
       .lean()
       .exec();
+    const car = await Car.findOne({ driver: _id })
+      .select("-partners -driver")
+      .lean()
+      .exec();
 
     data.user = user;
+    data.car = car;
     res.json({ data });
   } catch (e) {
     console.error(e);

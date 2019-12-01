@@ -43,7 +43,10 @@
       </div>
       <div class="flex-grow-1">
         <nav id="user" class="navbar pb-0">
-          <h3>{{user.name}}</h3>
+          <h3>
+            {{user.name}} <span v-if="car" style="font-size: 1.5rem;">{{car.name}} : {{car.number}}</span>
+            <span v-else ><span style="color: #f5365c;"> هذا السائق لم يضاف على سيارة </span></span>
+          </h3>
         </nav>
         <div
           id="content"

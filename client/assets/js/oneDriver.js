@@ -8,12 +8,6 @@ $(document).ready(function() {
     expenses: []
   };
 
-  // const tableNode = $("table");
-  // const tableConfig = {
-  //   paging: false,
-  //   searching: false
-  // };
-  // const driverTable = tableNode.DataTable(tableConfig);
   $("#new-travel").on("click", function() {
     $("#travel-modal #modal").modal("show");
   });
@@ -258,7 +252,8 @@ $(document).ready(function() {
     user = new Vue({
       el: "#user",
       data: {
-        user: { name: "" }
+        user: { name: "" },
+        car: null
       }
     });
     MainDate = new Vue({
@@ -301,7 +296,9 @@ $(document).ready(function() {
         });
         getDataConst({
           success({ data }) {
+            console.log(data);
             user.user = data.user;
+            user.car = data.car;
           }
         });
       }
