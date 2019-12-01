@@ -9,6 +9,7 @@ $(document).ready(function() {
   };
 
   const initPayment = () => {
+    let vueObj;
     const tableNode = $("#payment-table");
     const tableConfig = {
       paging: false,
@@ -121,6 +122,7 @@ $(document).ready(function() {
           ok() {
             const obj = TO_JSON(this.$data);
             delete obj.H_;
+            obj.date = moment(obj.date).format("YYYY-MM-DD");
 
             if (!validUser(obj)) {
               swal({
@@ -131,7 +133,6 @@ $(document).ready(function() {
               });
               return;
             }
-            console.log(obj);
             if (this.H_.edit) {
               const id = this.H_.id;
 
@@ -197,10 +198,20 @@ $(document).ready(function() {
   };
 
   const initExpenses = () => {
+    const TRUE = "<p style='color:#5e72e4; text-align: center;'>&#10004;</p>";
+    const FALSE = "<p style='color:#f5365c; text-align: center;'>&#10008;</p>";
+    const renderPartnerLink = ({ _id, name }) => `
+    <a href="./onePartner.html?_id=${_id}">${name}</a>
+    `;
+    let vueObj;
     const tableNode = $("#expenses-table");
     const tableConfig = {
       paging: false,
-      searching: false
+      searching: false,
+      columnDefs: [
+        { targets: [0, 5], width: "75px" },
+        { targets: [2, 3, 4, 6], width: "50px" }
+      ]
     };
     const expensesTable = tableNode.DataTable(tableConfig);
 
@@ -242,9 +253,15 @@ $(document).ready(function() {
       vueObj.H_.title = "تعديل  المصروف";
       vueObj.H_.edit = true;
       vueObj.H_.okBtnTitle = "تعديل";
+      vueObj.H_.partner = __DATA__.partners;
       vueObj.H_.id = id;
       vueObj.date = data.date;
       vueObj.amount = data.amount;
+      vueObj.reason = data.reason;
+      vueObj.onCar = data.onCar;
+      vueObj.onDriver = data.onDriver;
+      vueObj.onPartner = data.onPartner;
+      vueObj.partner = data.partner._id;
     });
 
     const addToExpensesTable = obj => {
@@ -252,18 +269,17 @@ $(document).ready(function() {
       const newRow = expensesTable.row
         .add([
           moment(obj.date).format("YYYY-MM-DD"),
-          obj._for,
+          obj.reason,
           obj.amount,
-          obj._onCar,
-          obj._onDriver,
-          obj._onPartner,
+          obj.onCar ? TRUE : FALSE,
+          obj.onDriver ? TRUE : FALSE,
+          obj.onPartner ? renderPartnerLink(obj.partner) : FALSE,
           renderTableAction(obj._id)
         ])
         .draw(false)
         .node();
       $(newRow).attr("id", obj._id);
     };
-
     const editFromExpensesTable = ({ id, data }) => {
       __DATA__.expenses = __DATA__.expenses.map(e => (e._id == id ? data : e));
       const index = __DATA__.expenses.findIndex(e => e._id == id);
@@ -275,11 +291,11 @@ $(document).ready(function() {
         const rowNode = row
           .data([
             moment(data.date).format("YYYY-MM-DD"),
-            data._for,
+            data.reason,
             data.amount,
-            data._onCar,
-            data._onDriver,
-            data._onPartner,
+            data.onCar ? TRUE : FALSE,
+            data.onDriver ? TRUE : FALSE,
+            data.onPartner ? renderPartnerLink(data.partner) : FALSE,
             renderTableAction(data._id)
           ])
           .draw(false);
@@ -291,10 +307,17 @@ $(document).ready(function() {
         ];
       }
     };
-    const clearTable = () => expensesTable.clear().draw();
+    const clearTable = () => {
+      expensesTable.clear().draw();
+      __DATA__.expenses = [];
+    };
 
     const modalInit = () => {
-      const validExpenses = obj => obj.amount && obj.date;
+      const validExpenses = obj =>
+        obj.amount &&
+        obj.date &&
+        (obj.onPartner || obj.onDriver || obj.onCar) &&
+        ((obj.onPartner && obj.partner) || (!obj.onPartner && !obj.partner));
 
       vueObj = new Vue({
         el: "#expenses-modal #modal",
@@ -303,7 +326,7 @@ $(document).ready(function() {
             title: "",
             okBtnTitle: "",
             edit: null,
-
+            partner: __DATA__.partners,
             options: {
               format: "YYYY-MM-DD",
               useCurrent: true
@@ -311,14 +334,21 @@ $(document).ready(function() {
           },
 
           date: null,
-          amount: null
+          amount: null,
+          reason: "",
+          onCar: false,
+          onDriver: false,
+          onPartner: false,
+          partner: null
         },
         methods: {
           ok() {
             const obj = TO_JSON(this.$data);
+            if (!obj.partner) delete obj.partner;
+            obj.date = moment(obj.date).format("YYYY-MM-DD");
             delete obj.H_;
 
-            if (!validUser(obj)) {
+            if (!validExpenses(obj)) {
               swal({
                 title: "بعض الحقول ناقصة",
                 type: "warning",
@@ -327,15 +357,15 @@ $(document).ready(function() {
               });
               return;
             }
-            console.log(obj);
+
             if (this.H_.edit) {
               const id = this.H_.id;
 
-              putPayment({
+              putExpenses({
                 id,
                 data: obj,
                 success({ data }) {
-                  editFromPaymentTable({ data, id });
+                  editFromExpensesTable({ data, id });
                 },
                 error(e) {
                   swal({
@@ -348,16 +378,17 @@ $(document).ready(function() {
                 }
               });
             } else {
-              obj.user = user.user._id;
+              obj.driver = user.user._id;
+              obj.car = user.car._id;
 
-              addPayment({
+              addExpenses({
                 data: obj,
                 success({ data }) {
                   if (
                     new Date(data.date).getMonth() ==
                     new Date(MainDate.date).getMonth()
                   )
-                    addToPaymentTable(data);
+                    addToExpensesTable(data);
                 },
                 error(e) {
                   swal({
@@ -370,19 +401,25 @@ $(document).ready(function() {
                 }
               });
             }
-            $("#payment-modal #modal").modal("hide");
+            $("#expenses-modal #modal").modal("hide");
           }
         }
       });
-      const newPaymentBtn = $("#new-expenses");
+      const newExpensesBtn = $("#new-expenses");
       const modalNode = $("#expenses-modal #modal");
-      newPaymentBtn.on("click", () => {
+      newExpensesBtn.on("click", () => {
         modalNode.modal("show");
         vueObj.H_.title = "اضافة مصروف";
         vueObj.H_.edit = false;
+        vueObj.H_.partner = __DATA__.partners;
         vueObj.H_.okBtnTitle = "اضافة";
         vueObj.date = moment().format("YYYY-MM-DD");
         vueObj.amount = null;
+        vueObj.reason = "";
+        vueObj.onCar = false;
+        vueObj.onDriver = false;
+        vueObj.onPartner = false;
+        vueObj.partner = null;
       });
     };
     modalInit();
@@ -422,14 +459,11 @@ $(document).ready(function() {
           getData({
             m,
             y,
-            success({ data }) {
+            success({ data: { payment, expenses } }) {
               clearPaymentTable();
               clearExpensesTable();
-              __DATA__.payment = data.payment || [];
-              __DATA__.expenses = data.expenses || [];
-
-              for (let p of __DATA__.payment) addPaymentToTable(p);
-              for (let p of __DATA__.expenses) addExpensesToTable(p);
+              for (let p of payment) addPaymentToTable(p);
+              for (let p of expenses) addExpensesToTable(p);
             }
           });
         }
@@ -441,21 +475,19 @@ $(document).ready(function() {
         getData({
           m,
           y,
-          success({ data }) {
-            __DATA__.payment = data.payment || [];
-            __DATA__.expenses = data.expenses || [];
-            for (let p of __DATA__.expenses) addExpensesToTable(p);
-            for (let p of __DATA__.payment) addPaymentToTable(p);
+          success({ data: { payment, expenses } }) {
+            for (let p of expenses) addExpensesToTable(p);
+            for (let p of payment) addPaymentToTable(p);
           }
         });
-        getDataConst({
-          success({ data: { user: _rUser, cars, partners } }) {
-            user.user = _rUser;
-            __DATA__.cars = cars;
-            __DATA__.partners = partners;
-            console.log(__DATA__);
+        console.log("9999999999999999");
 
-            const car = cars.find(e => e.driver === _rUser._id);
+        getDataConst({
+          success({ data: { car, partners } }) {
+            user.user = car.driver;
+            console.log(car, "9999999999999999");
+            __DATA__.cars = car;
+            __DATA__.partners = partners;
 
             user.car = car;
           }

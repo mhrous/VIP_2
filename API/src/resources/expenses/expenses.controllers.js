@@ -45,18 +45,24 @@ export const addExpenses = async (req, res) => {
       return res.status(401).end();
     }
 
-    const { driver, car, _for, amount, date } = req.body;
-    if (!driver || !amount || !date || !car || !_for) {
+    const { driver, car, amount, date } = req.body;
+    console.log(req.body);
+    if (!driver || !amount || !date || !car) {
       return res.status(400).json({ error: "بعض المعلومات ناقصة" });
     }
     const [y, m, d] = date.split("-");
     req.body.date = new Date().setFullYear(y, m - 1, d);
-    const data = await Expenses.create(req.body);
+    const data1 = await Expenses.create(req.body);
+    const data = await Expenses.findById(data1._id)
+      .populate("partner", "name")
+      .lean()
+      .exec();
 
     return res.status(200).json({
       data
     });
   } catch (e) {
+    console.log(e);
     return res.status(400).end();
   }
 };
@@ -68,6 +74,7 @@ export const editExpenses = async (req, res) => {
     }
 
     const { _id } = req.params;
+    console.log(req.body);
 
     if (req.body.driver || req.body.car) {
       return res.status(400).json({ error: "لا يمكنك  تعديل هذا المعلمومات " });
@@ -81,11 +88,14 @@ export const editExpenses = async (req, res) => {
     const data = await Expenses.findByIdAndUpdate(_id, req.body, {
       new: true
     })
+      .populate("partner", "name")
+
       .lean()
       .exec();
 
     return res.status(200).json({ data });
   } catch (e) {
+    console.log(e);
     return res.status(400).end();
   }
 };

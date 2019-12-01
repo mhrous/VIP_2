@@ -110,6 +110,7 @@ th {
 .edit-table:hover {
   color: #5e72e4;
   transform: translateY(-1px);
+  
 }
 
 .remove-table:hover {

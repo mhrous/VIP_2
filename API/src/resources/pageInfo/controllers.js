@@ -1,5 +1,6 @@
 import User from "../user/user.model";
 import Payment from "../payment/payment.model";
+import Expenses from "../expenses/expenses.model";
 import Car from "../car/car.model";
 import { getFirstOfThisMonth, getFirstOfNextMonth } from "../../utils";
 
@@ -38,6 +39,15 @@ export const onePartner = async (req, res) => {
       .lean()
       .exec();
 
+    const expenses = await Expenses.find({
+      partner: _id,
+      date: { $gt: start, $lt: end }
+    })
+      .select("driver amount reason date")
+      .populate("driver", "name")
+      .lean()
+      .exec();
+    data.expenses = expenses;
     data.payment = payment;
     res.json({ data });
   } catch (e) {
@@ -51,22 +61,19 @@ export const oneDriverConst = async (req, res) => {
     let { _id } = req.query;
 
     const data = {};
-    const user = await User.findById(_id)
+
+    const partners = await User.find({ power: "P", active: true })
       .select("name")
       .lean()
       .exec();
-    const partners = await User.find({ power: "P", active: false })
-      .select("name")
-      .lean()
-      .exec();
-    const cars = await Car.find()
+    const car = await Car.findOne({ driver: _id })
+      .populate("driver", "name")
       .select("-partners")
       .lean()
       .exec();
 
-    data.user = user;
     data.partners = partners;
-    data.cars = cars;
+    data.car = car;
     res.json({ data });
   } catch (e) {
     console.error(e);
@@ -90,6 +97,14 @@ export const oneDriver = async (req, res) => {
       .lean()
       .exec();
 
+    const expenses = await Expenses.find({
+      driver: _id,
+      date: { $gt: start, $lt: end }
+    })
+      .populate("partner", "name")
+      .lean()
+      .exec();
+    data.expenses = expenses;
     data.payment = payment;
     res.json({ data });
   } catch (e) {

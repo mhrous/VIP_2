@@ -20,15 +20,15 @@ const exponsesSchema = new _mongoose.default.Schema({
     ref: "car",
     required: true
   },
-  _onCar: {
+  onCar: {
     type: Boolean,
     default: false
   },
-  _onDriver: {
+  onDriver: {
     type: Boolean,
     default: false
   },
-  _onPartner: {
+  onPartner: {
     type: Boolean,
     default: false
   },
@@ -40,7 +40,7 @@ const exponsesSchema = new _mongoose.default.Schema({
     type: Number,
     required: true
   },
-  _for: {
+  reason: {
     type: String,
     deflate: ""
   },

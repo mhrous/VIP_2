@@ -130,7 +130,7 @@
             </div>
 
             <div class="tab-content">
-              <div class="tab-pane fade " id="t1">
+              <div class="tab-pane fade show active " id="t1">
                 <table
                   id="all-drivers-table"
                   class="table table-striped table-bordered"
@@ -356,7 +356,7 @@
                 </table>
               </div>
 
-              <div class="tab-pane fade show active " id="t3">
+              <div class="tab-pane fade " id="t3">
                 <table
                   id="expenses-table"
                   class="table table-striped table-bordered"
@@ -385,7 +385,7 @@
                 <div id="expenses-modal">
                   <!-- Modal -->
                   <div class="modal fade" id="modal" role="dialog">
-                    <div class="modal-dialog  modal-dialog-scrollable">
+                    <div class="modal-dialog ">
                       <div class="modal-content">
                         <div class="modal-header">
                           <h5 class="modal-title">
@@ -402,19 +402,24 @@
                         <div class="modal-body">
                           <div class="form-group row has-danger mb-3">
                             <div class=" input-group input-group-alternative">
-                              <input
-                                placeholder="التاريخ   "
-                                type="text"
-                                class="form-control"
-                              />
+                              <date-picker
+                                value="date"
+                                name="date"
+                                v-model="date"
+                                :config="H_.options"
+                                @keyup.enter="ok"
+                              ></date-picker>
                             </div>
                           </div>
                           <div class="form-group row has-danger mb-3">
                             <div class=" input-group input-group-alternative">
                               <input
-                                placeholder="القيمة   "
-                                type="text"
+                                @keyup.enter="ok"
+                                placeholder="القيمة"
+                                type="number"
+                                step="100"
                                 class="form-control"
+                                v-model="amount"
                               />
                             </div>
                           </div>
@@ -427,6 +432,8 @@
                                 placeholder="السبب   "
                                 type="text"
                                 class="form-control"
+                                v-model="reason"
+                                @keyup.enter="ok"
                               >
                               </textarea>
                             </div>
@@ -435,7 +442,7 @@
                           <div class="form-group row has-danger mb-3">
                             <div class=" col-6 input-group ">
                               <label class="custom-toggle ml-3">
-                                <input type="checkbox" checked="" />
+                                <input type="checkbox" v-model="onCar" />
                                 <span
                                   class="custom-toggle-slider rounded-circle"
                                 >
@@ -445,7 +452,7 @@
                             </div>
                             <div class=" col-6 input-group ">
                               <label class="custom-toggle ml-3">
-                                <input type="checkbox" checked="" />
+                                <input type="checkbox" v-model="onDriver" />
                                 <span
                                   class="custom-toggle-slider rounded-circle"
                                 >
@@ -456,19 +463,37 @@
                           </div>
 
                           <div class="form-group row has-danger mb-3">
-                            <div class=" col-6 input-group ">
-                              <input
-                                placeholder="التاريخ   "
-                                type="text"
-                                class="form-control"
-                              />
+                            <div class="col-6 input-group input-group-alternative">
+                              <select
+                                aria-placeholder="الشريك"
+                                v-model="partner"
+                                class="form-control form-control-lg"
+                               :disabled="partner==false"
+                                
+                              >
+                                <option value="" disabled selected
+                                  >اختار الشريك</option
+                                >
+
+                                <option
+                                  v-for="p in H_.partner"
+                                  v-bind:value="p._id"
+                                >
+                                  {{ p.name }}
+                                </option>
+                              </select>
                             </div>
+
                             <div
                               class=" col-6 input-group "
                               style="padding-top: 10px;"
                             >
                               <label class="custom-toggle ml-3">
-                                <input type="checkbox" checked="" />
+                                <input
+                                  type="checkbox"
+                                  @change="partner=null"
+                                  v-model="onPartner"
+                                />
                                 <span
                                   class="custom-toggle-slider rounded-circle"
                                 >
@@ -478,6 +503,7 @@
                             </div>
                           </div>
                         </div>
+
                         <div class="modal-footer">
                           <button
                             type="button"
@@ -486,8 +512,12 @@
                           >
                             الغاء
                           </button>
-                          <button type="button" class="btn btn-primary">
-                            اضافة
+                          <button
+                            type="button"
+                            @click="ok"
+                            class="btn btn-primary"
+                          >
+                            {{H_.okBtnTitle}}
                           </button>
                         </div>
                       </div>

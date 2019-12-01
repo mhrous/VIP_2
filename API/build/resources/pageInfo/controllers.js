@@ -9,6 +9,8 @@ var _user = _interopRequireDefault(require("../user/user.model"));
 
 var _payment = _interopRequireDefault(require("../payment/payment.model"));
 
+var _expenses = _interopRequireDefault(require("../expenses/expenses.model"));
+
 var _car = _interopRequireDefault(require("../car/car.model"));
 
 var _utils = require("../../utils");
@@ -52,6 +54,14 @@ const onePartner = async (req, res) => {
         $lt: end
       }
     }).select("-user").lean().exec();
+    const expenses = await _expenses.default.find({
+      partner: _id,
+      date: {
+        $gt: start,
+        $lt: end
+      }
+    }).select("driver amount reason date").populate("driver", "name").lean().exec();
+    data.expenses = expenses;
     data.payment = payment;
     res.json({
       data
@@ -70,15 +80,15 @@ const oneDriverConst = async (req, res) => {
       _id
     } = req.query;
     const data = {};
-    const user = await _user.default.findById(_id).select("name").lean().exec();
     const partners = await _user.default.find({
       power: "P",
-      active: false
+      active: true
     }).select("name").lean().exec();
-    const cars = await _car.default.find().select("-partners").lean().exec();
-    data.user = user;
+    const car = await _car.default.findOne({
+      driver: _id
+    }).populate("driver", "name").select("-partners").lean().exec();
     data.partners = partners;
-    data.cars = cars;
+    data.car = car;
     res.json({
       data
     });
@@ -107,6 +117,14 @@ const oneDriver = async (req, res) => {
         $lt: end
       }
     }).select("-user").lean().exec();
+    const expenses = await _expenses.default.find({
+      driver: _id,
+      date: {
+        $gt: start,
+        $lt: end
+      }
+    }).populate("partner", "name").lean().exec();
+    data.expenses = expenses;
     data.payment = payment;
     res.json({
       data

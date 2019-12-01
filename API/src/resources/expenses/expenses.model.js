@@ -11,12 +11,12 @@ const exponsesSchema = new mongoose.Schema({
     ref: "car",
     required: true
   },
-  _onCar: { type: Boolean, default: false },
-  _onDriver: { type: Boolean, default: false },
-  _onPartner: { type: Boolean, default: false },
+  onCar: { type: Boolean, default: false },
+  onDriver: { type: Boolean, default: false },
+  onPartner: { type: Boolean, default: false },
   partner: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
   amount: { type: Number, required: true },
-  _for: { type: String, deflate: "" },
+  reason: { type: String, deflate: "" },
   date: { type: Date, required: true }
 });
 

@@ -11,14 +11,44 @@ $(document).ready(function() {
     paging: false,
     searching: false
   };
-  const expensesTable = $("#expenses-table").DataTable(tableConfig);
   const accountTable = $("#account-table").DataTable(tableConfig);
   const repairingTable = $("#repairing-table").DataTable(tableConfig);
 
   const initAccount = () => {};
   const initRepairing = () => {};
-  const initExpenses = () => {};
+  const initExpenses = () => {
+    const tableConfig = {
+      paging: false,
+      searching: false,
+      columnDefs: [{ targets: [0, , 1, 2], width: "75px" }]
+    };
+    const expensesTable = $("#expenses-table").DataTable(tableConfig);
+
+    const addToExpensesTable = obj => {
+      __DATA__.expenses = [...__DATA__.expenses, obj];
+      const newRow = expensesTable.row
+        .add([
+          obj.driver.name,
+          moment(obj.date).format("YYYY-MM-DD"),
+          obj.amount,
+          obj.reason
+        ])
+        .draw(false)
+        .node();
+      $(newRow).attr("id", obj._id);
+    };
+    const clearTable = () => {
+      expensesTable.clear().draw();
+      __DATA__.expenses = [];
+    };
+
+    return {
+      addExpensesToTable: addToExpensesTable,
+      clearExpensesTable: clearTable
+    };
+  };
   const initPayment = () => {
+    let vueObj;
     const tableNode = $("#payment-table");
     const tableConfig = {
       paging: false,
@@ -105,7 +135,10 @@ $(document).ready(function() {
         ];
       }
     };
-    const clearTable = () => paymentTable.clear().draw();
+    const clearTable = () => {
+      paymentTable.clear().draw();
+      __DATA__.payment = [];
+    };
 
     const modalInit = () => {
       const validUser = obj => obj.amount && obj.date;
@@ -213,7 +246,7 @@ $(document).ready(function() {
     renderSiteBar();
     initAccount();
     initRepairing();
-    initExpenses();
+    const { addExpensesToTable, clearExpensesTable } = initExpenses();
     const { addPaymentToTable, clearPaymentTable } = initPayment();
     user = new Vue({
       el: "#user",
@@ -239,11 +272,11 @@ $(document).ready(function() {
           getData({
             m,
             y,
-            success({ data }) {
+            success({ data: { payment, expenses } }) {
               clearPaymentTable();
-              __DATA__.payment = data.payment || [];
-              for (let p of __DATA__.payment) addPaymentToTable(p);
-              console.log(data);
+              clearExpensesTable();
+              for (let p of payment) addPaymentToTable(p);
+              for (let e of expenses) addExpensesToTable(e);
             }
           });
         }
@@ -255,12 +288,9 @@ $(document).ready(function() {
         getData({
           m,
           y,
-          success({ data }) {
-            __DATA__.payment = data.payment || [];
-
-            for (let p of __DATA__.payment) addPaymentToTable(p);
-
-            console.log(data);
+          success({ data: { payment, expenses } }) {
+            for (let p of payment) addPaymentToTable(p);
+            for (let e of expenses) addExpensesToTable(e);
           }
         });
         getDataConst({
