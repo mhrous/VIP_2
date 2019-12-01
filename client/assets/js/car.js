@@ -156,6 +156,7 @@ $(document).ready(function() {
 
         const name = obj.name;
         const number = obj.number;
+        const driverName = obj.driverName;
         const countTravel = obj.travel.length;
         let ematyTravel = 0;
         obj.travel.forEach(e => {
@@ -201,6 +202,7 @@ $(document).ready(function() {
           .add([
             name,
             number,
+            driverName,
             countTravel,
             ematyTravel,
             numberOfTavelAbofExpenseMax,
@@ -375,6 +377,8 @@ $(document).ready(function() {
             m,
             y,
             success({ data }) {
+              console.log(data);
+
               accountBulid(data);
             }
           });
@@ -388,6 +392,7 @@ $(document).ready(function() {
           m,
           y,
           success({ data }) {
+            console.log(data);
             accountBulid(data);
           }
         });

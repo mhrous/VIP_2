@@ -131,6 +131,8 @@ export const carInfo = async (req, res) => {
     const start = getFirstOfThisMonth(m, y);
     const end = getFirstOfNextMonth(m, y);
     const cars = await Car.find({})
+      .select("-partners")
+      .populate("driver", "name")
       .lean()
       .exec();
     cars.forEach(c => {
@@ -139,7 +141,8 @@ export const carInfo = async (req, res) => {
         expenses: [],
         name: c.name,
         number: c.number,
-        expensesMax: c.expensesMax
+        expensesMax: c.expensesMax,
+        driverName: c.driver.name
       };
     });
     const travel = await Travel.find({ date: { $gt: start, $lt: end } })
@@ -172,4 +175,63 @@ export const carInfo = async (req, res) => {
   }
 };
 
+export const driverInfo = async (req, res) => {
+  try {
+    let { m, y } = req.query;
+    m = parseInt(m) - 1;
+    const data = {};
 
+    const start = getFirstOfThisMonth(m, y);
+    const end = getFirstOfNextMonth(m, y);
+    const driver = await User.find({ active: true, power: "D" })
+      .lean()
+      .exec();
+    driver.forEach(d => {
+      data[d._id] = {
+        travel: [],
+        payment: [],
+        expenses: [],
+        name: d.name
+      };
+    });
+
+    const travel = await Travel.find({ date: { $gt: start, $lt: end } })
+      .populate("car", "-driver -partners")
+      .lean()
+      .exec();
+
+    travel.forEach(e => {
+      const index = e.driver._id.toString();
+      data[index].travel = [...data[index].travel, e];
+    });
+
+    const expenses = await Expenses.find({
+      onDriver: true,
+      date: { $gt: start, $lt: end }
+    })
+      .select("driver amount")
+      .lean()
+      .exec();
+
+    expenses.forEach(e => {
+      const index = e.driver;
+
+      data[index].expenses = [...data[index].expenses, e];
+    });
+    const payment = await Payment.find({
+      date: { $gt: start, $lt: end }
+    })
+      .lean()
+      .exec();
+
+    payment.forEach(e => {
+      const index = e.user;
+      if (!data[index]) return;
+      data[index].payment = [...data[index].payment, e];
+    });
+
+    return res.json({ data });
+  } catch (e) {
+    return res.status(400).end();
+  }
+};

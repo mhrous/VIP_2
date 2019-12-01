@@ -1,11 +1,20 @@
-const endPoint = "http://localhost:8888/api/user";
+const endPoint = "http://localhost:8888/api";
 
 const headers = {};
 
 const getDriver = ({ success }) => {
   $.ajax({
     type: "GET",
-    url: `${endPoint}?power=D&onCar=1`,
+    url: `${endPoint}/user/?power=D&onCar=1`,
+    success,
+    headers
+  });
+};
+
+const getData = ({ success, m, y }) => {
+  $.ajax({
+    type: "GET",
+    url: `${endPoint}/page/driver_info?m=${m}&y=${y}`,
     success,
     headers
   });
