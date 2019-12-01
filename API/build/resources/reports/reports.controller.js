@@ -3,11 +3,17 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.accountALLPartner = exports.accountALLDriver = exports.accountPartner = exports.accountDriver = exports.InfoCar = exports.InfoPartner = exports.InfoDriver = void 0;
+exports.accountALLPartner = exports.accountALLDriver = exports.accountPartner = exports.accountDriver = exports.accountCar = exports.InfoCar = exports.InfoPartner = exports.InfoDriver = void 0;
 
 var _user = _interopRequireDefault(require("../user/user.model"));
 
 var _car = _interopRequireDefault(require("../car/car.model"));
+
+var _payment = _interopRequireDefault(require("../payment/payment.model"));
+
+var _expenses = _interopRequireDefault(require("../expenses/expenses.model"));
+
+var _travel = _interopRequireDefault(require("../travel/travel.model"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -234,6 +240,34 @@ const InfoCar = async (req, res) => {
 };
 
 exports.InfoCar = InfoCar;
+
+const accountCar = async (req, res) => {
+  try {
+    const {
+      power
+    } = req.user;
+
+    if (power != "admin") {
+      return res.status(401).end();
+    }
+
+    const data = {};
+    const {
+      y,
+      m
+    } = req.query;
+    data.fileName = `جرد  حساب الشركاء ${m} - ${y} `;
+    data.doc = _objectSpread({}, pdfFile);
+    data.doc.pageOrientation = "landscape";
+    return res.status(200).json({
+      data
+    });
+  } catch (e) {
+    return res.status(400).end();
+  }
+};
+
+exports.accountCar = accountCar;
 
 const accountDriver = async (req, res) => {
   try {

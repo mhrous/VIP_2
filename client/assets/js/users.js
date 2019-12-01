@@ -89,7 +89,7 @@ $(document).ready(function() {
       __ALLUSER__ = [...__ALLUSER__, obj];
       const newRow = userTable.row
         .add([
-          renderName(obj.power, obj.name, obj._id),
+          obj.name,
           renderPhone(obj.phone),
           obj.address,
           powerValue[obj.power],
@@ -106,7 +106,7 @@ $(document).ready(function() {
       const row = userTable.row("#" + id);
       const rowNode = row
         .data([
-          renderName(data.power, data.name, id),
+          data.name,
           renderPhone(data.phone),
           data.address,
           powerValue[data.power],

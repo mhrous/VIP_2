@@ -1,5 +1,8 @@
 import User from "../user/user.model";
 import Car from "../car/car.model";
+import Payment from "../payment/payment.model";
+import Expenses from "../expenses/expenses.model";
+import Travel from "../travel/travel.model";
 
 const reverseStr = str =>
   str
@@ -174,6 +177,25 @@ export const InfoCar = async (req, res) => {
         { text: reverseStr(e.name), style }
       ]);
     });
+
+    return res.status(200).json({ data });
+  } catch (e) {
+    return res.status(400).end();
+  }
+};
+
+export const accountCar = async (req, res) => {
+  try {
+    const { power } = req.user;
+    if (power != "admin") {
+      return res.status(401).end();
+    }
+
+    const data = {};
+    const { y, m } = req.query;
+    data.fileName = `جرد  حساب الشركاء ${m} - ${y} `;
+    data.doc = { ...pdfFile };
+    data.doc.pageOrientation = "landscape";
 
     return res.status(200).json({ data });
   } catch (e) {

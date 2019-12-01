@@ -16,6 +16,7 @@ router.get("/", (req, res) => res.json({
 router.get("/info/driver", _reports.InfoDriver);
 router.get("/info/partner", _reports.InfoPartner);
 router.get("/info/car", _reports.InfoCar);
+router.get("/account/car", _reports.accountCar);
 router.get("/account/driver", _reports.accountDriver);
 router.get("/account/partner", _reports.accountPartner);
 router.get("/account/all/driver", _reports.accountALLDriver);

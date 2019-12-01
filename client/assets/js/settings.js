@@ -142,6 +142,13 @@ $(document).ready(function() {
             }
           });
         },
+        printAccountInfoCar() {
+          InfoAccountCar({
+            success({ data }) {
+              pdfMake.createPdf(data.doc).download(data.fileName);
+            }
+          });
+        },
         PrintAccountALLPartner() {
           accountALLPartner({
             success({ data }) {

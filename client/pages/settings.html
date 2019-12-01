@@ -40,7 +40,7 @@
         class="position-relative flex-grow-1 p-4 "
         style="overflow: auto;"
       >
-        <div class="card shadow p-4 mb-4 hide" id="card">
+        <div class="card shadow p-4 mb-4 " id="card">
           <div class="card-header" style="text-align: right;">
             <h2>المعلومات الشخصية :</h2>
           </div>
@@ -297,6 +297,71 @@
               </div>
 
               <div class="card">
+                <div class="card-header" id="h66">
+                  <h3 class="mb-0">
+                    <button
+                      class="btn btn-link collapsed"
+                      type="button"
+                      data-toggle="collapse"
+                      data-target="#c66"
+                      aria-expanded="false"
+                      aria-controls="c66"
+                      @click="reset"
+                    >
+                      جرد الحساب السيارات
+                    </button>
+                  </h3>
+                </div>
+                <div
+                  id="c66"
+                  class="collapse"
+                  aria-labelledby="h66"
+                  data-parent="#accordionExample"
+                >
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col">
+                        <div class="row">
+                          <div class="form-group has-danger col mb-3">
+                            <div class=" input-group input-group-alternative">
+                              <select
+                                v-model="mSelect"
+                                class="form-control form-control-lg"
+                              >
+                                <option v-for="m in months" v-bind:value="m">
+                                  {{ m }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="form-group has-danger col mb-3">
+                            <div class=" input-group input-group-alternative">
+                              <select
+                                v-model="ySelect"
+                                class="form-control form-control-lg"
+                              >
+                                <option v-for="y in years" v-bind:value="y">
+                                  {{ y }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col">
+                        <button
+                          @click="printAccountInfoCar"
+                          class="btn btn-block btn-primary "
+                        >
+                          تحميل
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
                 <div class="card-header" id="h4">
                   <h3 class="mb-0">
                     <button
@@ -526,7 +591,6 @@
     <script src="../assets/vendor/jquery/jquery.min.js"></script>
     <script src="../assets/vendor/bootstrap-sweetalert/js/bootstrap-sweetalert.min.js"></script>
     <script src="../assets/vendor/bootstrap/js/bootstrap.min.js"></script>
-    <script src="../assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
 
     <script src="../assets/vendor/vue/vue.js"></script>
     <script src="../assets/vendor/pdf/pdfMack.js"></script>

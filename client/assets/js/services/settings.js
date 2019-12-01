@@ -64,6 +64,15 @@ const accountALLPartner = ({ success, y, m }) => {
     headers
   });
 };
+const InfoAccountCar = ({ success, y, m }) => {
+  $.ajax({
+    type: "GET",
+    url: `${endPoint}/reports/account/car?y=${y}&m=${m}`,
+    success,
+    headers
+  });
+};
+
 
 const accountDriver = ({ success, driver, y, m }) => {
   $.ajax({
@@ -73,3 +82,4 @@ const accountDriver = ({ success, driver, y, m }) => {
     headers
   });
 };
+

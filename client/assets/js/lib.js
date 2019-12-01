@@ -72,7 +72,6 @@ const renderSiteBar = () => {
   switch (power) {
     case "admin":
       pages = [
-        ["travel", "رحلات"],
         ["driver", "سائقين"],
         ["car", "سيارات"],
         ["partner", "شركاء"],
@@ -82,7 +81,6 @@ const renderSiteBar = () => {
       break;
     case "s_admin":
       pages = [
-        ["travel", "رحلات"],
         ["driver", "سائقين"],
         ["car", "سيارات"],
         ["partner", "شركاء"],
