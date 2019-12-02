@@ -17,7 +17,7 @@ const travelSchema = new _mongoose.default.Schema({
   },
   driver: {
     type: _mongoose.default.Schema.Types.ObjectId,
-    ref: "driver",
+    ref: "user",
     required: true
   },
   date: {

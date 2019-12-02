@@ -37,7 +37,6 @@ $(document).ready(function() {
       });
     };
     const removeFromRepairingTable = data => {
-      console.log(data, "88888888888");
       data.repairing.forEach(obj => {
         const row = _repairingTable.row(`#${new Date(obj._id).getTime()}`);
 
@@ -72,10 +71,7 @@ $(document).ready(function() {
       if (array.length == 0) return FALSE;
       let str = "<div>";
       array.forEach(e => {
-        console.log(
-          __DATA__.partners.find(c => c._id == e.partner),
-          TO_JSON(__DATA__.partners)
-        );
+      
         str += `<p> ${
           __DATA__.partners.find(c => c._id == e.partner).name
         } : (${e.value})</p>`;
@@ -999,7 +995,6 @@ $(document).ready(function() {
               clearPaymentTable();
               clearExpensesTable();
               clearTravelTable();
-              console.log(travel);
               for (let p of payment) addPaymentToTable(p);
               for (let p of expenses) addExpensesToTable(p);
               for (let t of travel) addTravelToTable(t);

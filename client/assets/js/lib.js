@@ -9,8 +9,8 @@ const changeLocation = (depth, newPath) => {
 const logInlocally = ({ token, power }) => {
   if (!token || token === "null" || token === "undefined") return;
 
-  if (power === "P" || power === "D") changeLocation(1, "pages/404page.html");
-  else changeLocation(1, "pages/travel.html");
+  if (power === "P" || power === "D" ||power=="S") changeLocation(1, "pages/404page.html");
+  else changeLocation(1, "pages/driver.html");
 };
 
 const setHeaders = token => {

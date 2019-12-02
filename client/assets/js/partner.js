@@ -26,37 +26,11 @@ $(document).ready(function() {
     });
   };
 
-  const accountInit = () => {
-    const tableNode = $("#account-table");
-    const tableConfig = {
-      paging: false,
-      searching: false
-    };
-    const accountTable = tableNode.DataTable(tableConfig);
-  };
 
-  const header = () => {
-    const datePicker = $("#date-picker input");
-    const dataPickerNode = $("#date-picker");
-
-    $("#partner_tab").on("click", () => {
-      dataPickerNode.addClass("hide");
-    });
-
-    $("#account_tap").on("click", () => {
-      dataPickerNode.removeClass("hide");
-    });
-
-    let _DATE_ = new Date();
-
-    datePicker.on("change", function(e) {});
-  };
 
   const start = () => {
     renderSiteBar();
-    header();
     setTimeout(allPartnerTableInit, 0);
-    setTimeout(accountInit, 0);
   };
 
   start();

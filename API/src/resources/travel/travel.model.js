@@ -8,7 +8,7 @@ const travelSchema = new mongoose.Schema({
   },
   driver: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "driver",
+    ref: "user",
     required: true
   },
   date: { type: Date, required: true },

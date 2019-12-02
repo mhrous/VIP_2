@@ -377,7 +377,6 @@ $(document).ready(function() {
             m,
             y,
             success({ data }) {
-              console.log(data);
 
               accountBulid(data);
             }
@@ -392,7 +391,6 @@ $(document).ready(function() {
           m,
           y,
           success({ data }) {
-            console.log(data);
             accountBulid(data);
           }
         });

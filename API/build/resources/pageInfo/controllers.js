@@ -57,18 +57,77 @@ const onePartner = async (req, res) => {
       }
     }).select("-user").lean().exec();
     const expenses = await _expenses.default.find({
+      onPartner: true,
       partner: _id,
       date: {
         $gt: start,
         $lt: end
       }
     }).select("driver amount reason date").populate("driver", "name").lean().exec();
+    const repairing = await _travel.default.find({
+      repairing: {
+        $elemMatch: {
+          partner: _id
+        }
+      },
+      date: {
+        $gt: start,
+        $lt: end
+      }
+    }).populate("driver", "name").select("driver repairing date").lean().exec();
+    const account = {};
+    const cars = await _car.default.find({
+      partners: {
+        $elemMatch: {
+          partner: _id
+        }
+      }
+    }).populate("driver", "name").lean().exec();
+    cars.forEach(c => {
+      account[c._id] = {
+        driverName: c.driver.name,
+        carName: c.name,
+        carNaumber: c.number,
+        part: c.partners.find(p => p.partner == _id).value,
+        travel: [],
+        expenses: []
+      };
+    });
+    const carsId = cars.map(e => e._id);
+    const travelCars = await _travel.default.find({
+      car: {
+        $in: carsId
+      },
+      date: {
+        $gt: start,
+        $lt: end
+      }
+    }).lean().exec();
+    travelCars.forEach(t => {
+      account[t.car].travel.push(t);
+    });
+    const expensesCars = await _expenses.default.find({
+      onCar: true,
+      car: {
+        $in: carsId
+      },
+      date: {
+        $gt: start,
+        $lt: end
+      }
+    }).select("car amount").lean().exec();
+    expensesCars.forEach(e => {
+      account[e.car].expenses.push(e);
+    });
+    data.account = account;
+    data.repairing = repairing;
     data.expenses = expenses;
     data.payment = payment;
     res.json({
       data
     });
   } catch (e) {
+    console.log(e);
     return res.status(400).end();
   }
 }; //driver
