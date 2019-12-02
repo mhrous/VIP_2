@@ -3,6 +3,7 @@ import Car from "../car/car.model";
 import Payment from "../payment/payment.model";
 import Expenses from "../expenses/expenses.model";
 import Travel from "../travel/travel.model";
+import { getFirstOfThisMonth, getFirstOfNextMonth } from "../../utils";
 
 const reverseStr = str =>
   str
@@ -12,6 +13,10 @@ const reverseStr = str =>
     .trim();
 
 const stayleTable = {
+  headerFile: {
+    alignment: "center",
+    margin: [7, 7, 7, 7]
+  },
   header: {
     bold: true,
     fontSize: 12,
@@ -152,7 +157,7 @@ export const InfoCar = async (req, res) => {
       {
         table: {
           headerRows: 1,
-          widths: ["*", "*", "auto", "*"],
+          widths: ["*", 120, 75, 75],
           body: [
             [
               { text: reverseStr("رقم السائق"), style: "header" },
@@ -184,6 +189,70 @@ export const InfoCar = async (req, res) => {
   }
 };
 
+////////////////////////////////
+/*
+
+
+*/
+
+// export const accountDriver = async (req, res) => {
+//   try {
+//     const { power } = req.user;
+//     if (power != "admin") {
+//       return res.status(401).end();
+//     }
+//     const data = {};
+//     const { y, m } = req.query;
+//     data.fileName = `جرد  حساب السائقين  ${m} - ${y} `;
+//     data.doc = { ...pdfFile };
+//     data.doc.pageOrientation = "landscape";
+
+//     data.doc.content = [
+//       {
+//         table: {
+//           headerRows: 1,
+//           widths: ["auto", "auto", "auto", "auto", "auto", "auto", "auto", "*"],
+//           body: [
+//             [
+//               { text: reverseStr("المتبقي"), style: "header" },
+//               { text: reverseStr("الدفعات"), style: "header" },
+//               { text: reverseStr("الصافي"), style: "header" },
+//               { text: reverseStr("اجمالي الحصص"), style: "header" },
+//               { text: reverseStr("الطلبات الخارجية"), style: "header" },
+//               { text: reverseStr("اجمالي وصول الدين"), style: "header" },
+//               { text: reverseStr("عدد وصول الدين"), style: "header" },
+//               { text: "الاسم", style: "header" }
+//             ]
+//           ]
+//         }
+//       }
+//     ];
+//     const users = await User.find({ power: "P", active: true })
+//       .select("name ")
+//       .lean()
+//       .exec();
+
+//     users.forEach((e, i) => {
+//       const style = (i + 1) % 2 ? "odd" : "even";
+//       data.doc.content[0].table.body.push([
+//         { text: "", style },
+//         { text: "", style },
+//         { text: "", style },
+//         { text: "", style },
+//         { text: "", style },
+//         { text: "", style },
+
+//         { text: "", style },
+//         { text: reverseStr(e.name), style }
+//       ]);
+//     });
+
+//     return res.status(200).json({ data: { y, m, name: "Driver" } });
+//   } catch (e) {
+//     return res.status(400).end();
+//   }
+// };
+
 export const accountCar = async (req, res) => {
   try {
     const { power } = req.user;
@@ -193,17 +262,182 @@ export const accountCar = async (req, res) => {
 
     const data = {};
     const { y, m } = req.query;
-    data.fileName = `جرد  حساب الشركاء ${m} - ${y} `;
+    data.fileName = `جرد السيارات ${m} - ${y}`;
     data.doc = { ...pdfFile };
+
     data.doc.pageOrientation = "landscape";
+    data.doc.content = [
+      {
+        text: reverseStr(`  جرد حساب السيارات  ${m} - ${y} `),
+        style: "headerFile"
+      }
+    ];
+
+    const mytable = {
+      table: {
+        headerRows: 1,
+        widths: [56, 58, 68, 66, 56, 60, 66, "*", 50, "*"],
+        body: [
+          [
+            { text: "الصافي", style: "header" },
+            { text: "التصليح", style: "header" },
+            { text: "المصروف", style: "header" },
+            { text: "قيمة  السفرات ", style: "header" },
+
+            { text: "قيمة وصول الدين ", style: "header" },
+            { text: "عدد وصول الدين ", style: "header" },
+            { text: "عدد السفرات ", style: "header" },
+            { text: reverseStr("اسم السائق"), style: "header" },
+            { text: "الرقم", style: "header" },
+            { text: "النوع", style: "header" }
+          ]
+        ]
+      }
+    };
+
+    const getData = async (m, y) => {
+      m = parseInt(m) - 1;
+      const obj = {};
+      const start = getFirstOfThisMonth(m, y);
+      const end = getFirstOfNextMonth(m, y);
+
+      const cars = await Car.find({})
+        .select("-partners")
+        .populate("driver", "name")
+        .lean()
+        .exec();
+      cars.forEach(c => {
+        obj[c._id] = {
+          travel: [],
+          expenses: [],
+          name: c.name,
+          number: c.number,
+          expensesMax: c.expensesMax,
+          driverName: c.driver.name
+        };
+      });
+      const travel = await Travel.find({ date: { $gt: start, $lt: end } })
+        .populate("car", "-driver -partners")
+        .lean()
+        .exec();
+
+      travel.forEach(e => {
+        const index = e.car._id.toString();
+        obj[index].travel = [...obj[index].travel, e];
+      });
+      const expenses = await Expenses.find({
+        onCar: true,
+        date: { $gt: start, $lt: end }
+      })
+        .select("car amount")
+        .lean()
+        .exec();
+
+      expenses.forEach(e => {
+        const index = e.car;
+
+        obj[index].expenses = [...obj[index].expenses, e];
+      });
+      return obj;
+    };
+    const processingData = obj => {
+      let array = [];
+      for (let a of Object.values(obj)) {
+        const { name, number, driverName, travel, expenses } = a;
+        const numberTravel = travel.length;
+        const numberRepairing = travel.reduce(
+          (a, b) => a + b.repairing.length,
+          0
+        );
+        const totalRepairing = travel.reduce(
+          (a, b) => a + b.repairing.reduce((_a, _b) => _a + _b.value, 0),
+          0
+        );
+        const totalTravel =
+          travel.reduce((a, b) => a + b.cashTo + b.cashBack, 0) +
+          totalRepairing;
+        const travelExpenses = travel.reduce((a, b) => a + b.expenses, 0);
+        const carExpenses = expenses.reduce((a, b) => a + b.amount, 0);
+
+        const result = totalTravel - travelExpenses - carExpenses;
+        array = [
+          ...array,
+          {
+            name,
+            number,
+            driverName,
+            numberTravel,
+            numberRepairing,
+            totalRepairing,
+            totalTravel,
+            travelExpenses,
+            carExpenses,
+            result
+          }
+        ];
+      }
+      return array;
+    };
+    const obj = await getData(m, y);
+    const result = processingData(obj);
+
+    result.forEach((e, i) => {
+      const style = (i + 1) % 2 ? "odd" : "even";
+      const {
+        name,
+        number,
+        driverName,
+        numberTravel,
+        numberRepairing,
+        totalRepairing,
+        totalTravel,
+        travelExpenses,
+        carExpenses,
+        result
+      } = e;
+      mytable.table.body.push([
+        { text: result, style },
+        { text: carExpenses, style },
+        { text: travelExpenses, style },
+        { text: totalTravel, style },
+        { text: totalRepairing, style },
+        { text: numberRepairing, style },
+
+        { text: numberTravel, style },
+        { text: reverseStr(driverName), style },
+
+        { text: number, style },
+        { text: name, style }
+      ]);
+    });
+    data.doc.content = [...data.doc.content, mytable];
 
     return res.status(200).json({ data });
   } catch (e) {
+    console.log(e);
     return res.status(400).end();
   }
 };
 
-export const accountDriver = async (req, res) => {
+// export const accountPartner = async (req, res) => {
+//   try {
+//     const { power } = req.user;
+//     if (power != "admin") {
+//       return res.status(401).end();
+//     }
+
+//     const { y, m } = req.query;
+
+//     return res.status(200).json({ data: { m, y, name: "partner" } });
+//   } catch (e) {}
+// };
+
+/*
+
+
+*/
+
+export const _driver = async (req, res) => {
   try {
     const { power } = req.user;
     if (power != "admin") {
@@ -302,38 +536,22 @@ export const accountDriver = async (req, res) => {
 
       array.push(data);
     });
+
+    return res.status(200).json({ data: { m, y, d, name: "d" } });
     return res.status(200).json({ data: array });
   } catch (e) {
     return res.status(400).end();
   }
 };
 
-export const accountPartner = async (req, res) => {
-  try {
-    const { power } = req.user;
-    if (power != "admin") {
-      return res.status(401).end();
-    }
-  } catch (e) {}
-};
-
-export const accountALLDriver = async (req, res) => {
-  try {
-    const { power } = req.user;
-    if (power != "admin") {
-      return res.status(401).end();
-    }
-  } catch (e) {}
-};
-
-export const accountALLPartner = async (req, res) => {
+export const _partner = async (req, res) => {
   try {
     const { power } = req.user;
     if (power != "admin") {
       return res.status(401).end();
     }
     const data = {};
-    const { y, m } = req.query;
+    const { y, m, p } = req.query;
     data.fileName = `جرد  حساب الشركاء ${m} - ${y} `;
     data.doc = { ...pdfFile };
     data.doc.pageOrientation = "landscape";
@@ -377,6 +595,7 @@ export const accountALLPartner = async (req, res) => {
         { text: reverseStr(e.name), style }
       ]);
     });
+    return res.status(200).json({ data: { m, y, p, name: "p" } });
 
     return res.status(200).json({ data });
   } catch (e) {

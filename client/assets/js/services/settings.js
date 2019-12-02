@@ -21,7 +21,14 @@ const putMe = ({ data, success, error }) => {
     error
   });
 };
-
+const getPartnerAndDriverName = ({ success }) => {
+  $.ajax({
+    type: "GET",
+    url: `${endPoint}/user/name`,
+    success,
+    headers
+  });
+};
 const InfoDriver = ({ success }) => {
   $.ajax({
     type: "GET",
@@ -48,38 +55,49 @@ const InfoCar = ({ success }) => {
     headers
   });
 };
-const getPartnerAndDriverName = ({ success }) => {
+
+//
+const accountDriver = ({ success, y, m }) => {
   $.ajax({
     type: "GET",
-    url: `${endPoint}/user/name`,
-    success,
-    headers
-  });
-};
-const accountALLPartner = ({ success, y, m }) => {
-  $.ajax({
-    type: "GET",
-    url: `${endPoint}/reports/account/all/partner?y=${y}&m=${m}`,
-    success,
-    headers
-  });
-};
-const InfoAccountCar = ({ success, y, m }) => {
-  $.ajax({
-    type: "GET",
-    url: `${endPoint}/reports/account/car?y=${y}&m=${m}`,
+    url: `${endPoint}/reports/account/drivers?y=${y}&m=${m}`,
     success,
     headers
   });
 };
 
+//
 
-const accountDriver = ({ success, driver, y, m }) => {
+const accountCar = ({ success, y, m }) => {
   $.ajax({
     type: "GET",
-    url: `${endPoint}/reports/account/driver?y=${y}&m=${m}&d=${driver}`,
+    url: `${endPoint}/reports/account/cars?y=${y}&m=${m}`,
+    success,
+    headers
+  });
+};
+const accountPartner = ({ success, y, m }) => {
+  $.ajax({
+    type: "GET",
+    url: `${endPoint}/reports/account/partners?y=${y}&m=${m}`,
     success,
     headers
   });
 };
 
+const driver = ({ success, y, m, d }) => {
+  $.ajax({
+    type: "GET",
+    url: `${endPoint}/reports/account/_driver?y=${y}&m=${m}&d=${d}`,
+    success,
+    headers
+  });
+};
+const partner = ({ success, y, m, p }) => {
+  $.ajax({
+    type: "GET",
+    url: `${endPoint}/reports/account/_partner?y=${y}&m=${m}&p=${p}`,
+    success,
+    headers
+  });
+};

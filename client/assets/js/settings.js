@@ -109,18 +109,7 @@ $(document).ready(function() {
           this.sDriver = 0;
           this.sPartner = 0;
         },
-        printAccountDriver() {
-          accountDriver({
-            success({ data }) {
-              data.forEach(d => {
-                pdfMake.createPdf(d.doc).download(d.fileName);
-              });
-            },
-            y: this.ySelect,
-            m: this.mSelect,
-            driver: this.sDriver
-          });
-        },
+
         printInfoDriver() {
           InfoDriver({
             success({ data }) {
@@ -142,24 +131,79 @@ $(document).ready(function() {
             }
           });
         },
-        printAccountInfoCar() {
-          InfoAccountCar({
-            success({ data }) {
-              pdfMake.createPdf(data.doc).download(data.fileName);
-            }
-          });
-        },
-        PrintAccountALLPartner() {
-          accountALLPartner({
+
+        //////////////////
+        ////////////////
+
+        // printAccountDriver() {
+        //   accountDriver({
+        //     success({ data }) {
+        //       console.log(data);
+        //       pdfMake.createPdf(data.doc).download(data.fileName);
+
+        //     },
+        //     y: this.ySelect,
+        //     m: this.mSelect
+        //   });
+        //   // accountDriver({
+        //   //   success({ data }) {
+        //   //     data.forEach(d => {
+        //   //       pdfMake.createPdf(d.doc).download(d.fileName);
+        //   //     });
+        //   //   },
+        //   //   y: this.ySelect,
+        //   //   m: this.mSelect,
+        //   //   driver: this.sDriver
+        //   // });
+        // },
+       
+       
+        printAccountCars() {
+          accountCar({
             success({ data }) {
               pdfMake.createPdf(data.doc).download(data.fileName);
             },
             y: this.ySelect,
             m: this.mSelect
           });
+        },
+
+        // printAccountPartner() {
+        //   accountPartner({
+        //     success({ data }) {
+        //       console.log(data);
+        //     },
+        //     y: this.ySelect,
+        //     m: this.mSelect
+        //   });
+        // },
+
+        ///////////////////////
+        //////////////////////
+
+        printDriver() {
+          driver({
+            success({ data }) {
+              console.log(data);
+            },
+            y: this.ySelect,
+            m: this.mSelect,
+            d: this.sDriver
+          });
+        },
+        PrintPartner() {
+          partner({
+            success({ data }) {
+              console.log(data);
+            },
+            y: this.ySelect,
+            m: this.mSelect,
+            p: this.sPartner
+          });
         }
       }
     });
+
     getPartnerAndDriverName({
       success({ data }) {
         data.forEach(e => {

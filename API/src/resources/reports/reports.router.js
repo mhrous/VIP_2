@@ -3,22 +3,23 @@ import {
   InfoCar,
   InfoDriver,
   InfoPartner,
-  accountDriver,
-  accountPartner,
-  accountALLPartner,
-  accountALLDriver,
+  // accountDriver,
+  // accountPartner,
+  _partner,
+  _driver,
   accountCar
 } from "./reports.controller";
 
 const router = Router();
-router.get("/", (req, res) => res.json({ data: "ggggg" }));
 router.get("/info/driver", InfoDriver);
 router.get("/info/partner", InfoPartner);
 router.get("/info/car", InfoCar);
-router.get("/account/car", accountCar);
-router.get("/account/driver", accountDriver);
-router.get("/account/partner", accountPartner);
-router.get("/account/all/driver", accountALLDriver);
-router.get("/account/all/partner", accountALLPartner);
+
+router.get("/account/cars", accountCar);
+// router.get("/account/drivers", accountDriver);
+// router.get("/account/partners", accountPartner);
+
+router.get("/account/_driver", _driver);
+router.get("/account/_partner", _partner);
 
 export default router;

@@ -40,7 +40,7 @@
         class="position-relative flex-grow-1 p-4 "
         style="overflow: auto;"
       >
-        <div class="card shadow p-4 mb-4 " id="card">
+        <div class="card shadow p-4 mb-4" id="card">
           <div class="card-header" style="text-align: right;">
             <h2>المعلومات الشخصية :</h2>
           </div>
@@ -198,29 +198,41 @@
           </div>
           <div class="card-body" style="text-align: right;">
             <div class="accordion" id="accordionExample">
-              <div class="card">
-                <div class="card-header">
+              <div class="card mb-2">
+                <div
+                  class="card-header"
+                  style="cursor: pointer;"
+                  @click="printInfoDriver"
+                >
                   <h3 class="mb-0">
-                    <button class="btn btn-link" @click="printInfoDriver">
+                    <button class="btn btn-link">
                       معلومات السائقين
                     </button>
                   </h3>
                 </div>
               </div>
-              <div class="card">
-                <div class="card-header">
+              <div class="card mb-2">
+                <div
+                  class="card-header"
+                  style="cursor: pointer;"
+                  @click="printInfoPartner"
+                >
                   <h3 class="mb-0">
-                    <button class="btn btn-link" @click="printInfoPartner">
+                    <button class="btn btn-link">
                       معلومات الشركاء
                     </button>
                   </h3>
                 </div>
               </div>
 
-              <div class="card">
-                <div class="card-header">
+              <div class="card mb-2">
+                <div
+                  class="card-header"
+                  style="cursor: pointer;"
+                  @click="printInfoCar"
+                >
                   <h3 class="mb-0">
-                    <button class="btn btn-link" @click="printInfoCar">
+                    <button class="btn btn-link">
                       معلومات سيارات
                     </button>
                   </h3>
@@ -234,18 +246,19 @@
               <!-- _________________________________________________________ -->
               <!-- _________________________________________________________ -->
 
-              <div class="card">
-                <div class="card-header" id="h3">
+              <!-- <div class="card mb-2">
+                <div
+                  class="card-header"
+                  style="cursor: pointer;"
+                  id="h3"
+                  data-toggle="collapse"
+                  data-target="#c3"
+                  aria-expanded="false"
+                  aria-controls="c3"
+                  @click="reset"
+                >
                   <h3 class="mb-0">
-                    <button
-                      class="btn btn-link collapsed"
-                      type="button"
-                      data-toggle="collapse"
-                      data-target="#c3"
-                      aria-expanded="false"
-                      aria-controls="c3"
-                      @click="reset"
-                    >
+                    <button class="btn btn-link collapsed" type="button">
                       جرد الحساب السائقين
                     </button>
                   </h3>
@@ -287,27 +300,31 @@
                         </div>
                       </div>
                       <div class="col">
-                        <button class="btn btn-block btn-primary ">
+                        <button
+                          @click="printAccountDriver"
+                          class="btn btn-block btn-primary "
+                        >
                           تحميل
                         </button>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
 
-              <div class="card">
-                <div class="card-header" id="h66">
+              <div class="card mb-2">
+                <div
+                  class="card-header"
+                  style="cursor: pointer;"
+                  data-toggle="collapse"
+                  data-target="#c66"
+                  aria-expanded="false"
+                  aria-controls="c66"
+                  @click="reset"
+                  id="h66"
+                >
                   <h3 class="mb-0">
-                    <button
-                      class="btn btn-link collapsed"
-                      type="button"
-                      data-toggle="collapse"
-                      data-target="#c66"
-                      aria-expanded="false"
-                      aria-controls="c66"
-                      @click="reset"
-                    >
+                    <button class="btn btn-link collapsed" type="button">
                       جرد الحساب السيارات
                     </button>
                   </h3>
@@ -350,7 +367,7 @@
                       </div>
                       <div class="col">
                         <button
-                          @click="printAccountInfoCar"
+                          @click="printAccountCars"
                           class="btn btn-block btn-primary "
                         >
                           تحميل
@@ -361,18 +378,19 @@
                 </div>
               </div>
 
-              <div class="card">
-                <div class="card-header" id="h4">
+              <!-- <div class="card mb-2">
+                <div
+                  class="card-header"
+                  style="cursor: pointer;"
+                  data-toggle="collapse"
+                  data-target="#c4"
+                  aria-expanded="false"
+                  aria-controls="c4"
+                  @click="reset"
+                  id="h4"
+                >
                   <h3 class="mb-0">
-                    <button
-                      class="btn btn-link collapsed"
-                      type="button"
-                      data-toggle="collapse"
-                      data-target="#c4"
-                      aria-expanded="false"
-                      aria-controls="c4"
-                      @click="reset"
-                    >
+                    <button class="btn btn-link collapsed" type="button">
                       جرد الحساب الشركاء
                     </button>
                   </h3>
@@ -416,7 +434,7 @@
                       <div class="col">
                         <button
                           class="btn btn-block btn-primary "
-                          @click="PrintAccountALLPartner"
+                          @click="printAccountPartner"
                         >
                           تحميل
                         </button>
@@ -424,19 +442,28 @@
                     </div>
                   </div>
                 </div>
-              </div>
-              <div class="card">
-                <div class="card-header" id="h5">
+              </div> -->
+
+              <!-- _________________________________________________________ -->
+              <!-- _________________________________________________________ -->
+              <!-- _________________________________________________________ -->
+              <!-- _________________________________________________________ -->
+              <!-- _________________________________________________________ -->
+              <!-- _________________________________________________________ -->
+
+              <!-- <div class="card mb-2">
+                <div
+                  class="card-header"
+                  style="cursor: pointer;"
+                  data-toggle="collapse"
+                  data-target="#c5"
+                  aria-expanded="false"
+                  aria-controls="c5"
+                  @click="reset"
+                  id="h5"
+                >
                   <h3 class="mb-0">
-                    <button
-                      class="btn btn-link collapsed"
-                      type="button"
-                      data-toggle="collapse"
-                      data-target="#c5"
-                      aria-expanded="false"
-                      aria-controls="c5"
-                      @click="reset"
-                    >
+                    <button class="btn btn-link collapsed" type="button">
                       حساب السائق
                     </button>
                   </h3>
@@ -496,7 +523,7 @@
                       <div class="col">
                         <button
                           class="btn btn-block btn-primary "
-                          @click="printAccountDriver"
+                          @click="printDriver"
                         >
                           تحميل
                         </button>
@@ -504,19 +531,21 @@
                     </div>
                   </div>
                 </div>
-              </div>
-              <div class="card">
-                <div class="card-header" id="h6">
+              </div> -->
+
+              <!-- <div class="card mb-2">
+                <div
+                  class="card-header"
+                  style="cursor: pointer;"
+                  data-toggle="collapse"
+                  data-target="#c6"
+                  aria-expanded="false"
+                  aria-controls="c6"
+                  @click="reset"
+                  id="h6"
+                >
                   <h3 class="mb-0">
-                    <button
-                      class="btn btn-link collapsed"
-                      type="button"
-                      data-toggle="collapse"
-                      data-target="#c6"
-                      aria-expanded="false"
-                      aria-controls="c6"
-                      @click="reset"
-                    >
+                    <button class="btn btn-link collapsed" type="button">
                       حساب شريك
                     </button>
                   </h3>
@@ -574,14 +603,18 @@
                         </div>
                       </div>
                       <div class="col">
-                        <button class="btn btn-block btn-primary ">
+                        <button
+                          @click="PrintPartner"
+                          class="btn btn-block btn-primary "
+                        >
                           تحميل
                         </button>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
+
             </div>
           </div>
         </div>
