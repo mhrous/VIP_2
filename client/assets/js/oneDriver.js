@@ -211,8 +211,8 @@ $(document).ready(function() {
 
           date: null,
           expenses: null,
-          cashTo: 0,
-          cashBack: 0,
+          cashTo: null,
+          cashBack: null,
           repairing: []
         },
         methods: {
@@ -225,7 +225,7 @@ $(document).ready(function() {
                 from: null,
                 clientPhone: null,
                 clientName: null,
-                value: 0,
+                value: null,
                 isGO: true
               }
             ];
@@ -307,8 +307,8 @@ $(document).ready(function() {
 
         vueObj.date = moment().format("YYYY-MM-DD");
         vueObj.expenses = null;
-        vueObj.cashTo = 0;
-        vueObj.cashBack = 0;
+        vueObj.cashTo = null;
+        vueObj.cashBack = null;
         vueObj.repairing = [];
       });
     };

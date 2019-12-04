@@ -259,8 +259,8 @@ $(document).ready(function() {
         name: "",
         number: "",
         driver: "",
-        expensesMax: 0,
-        partners: [{ partner: "", value: 0, _id: new Date().getTime() }]
+        expensesMax: null,
+        partners: [{ partner: "", value: null, _id: new Date().getTime() }]
       },
       methods: {
         ok() {
@@ -336,8 +336,8 @@ $(document).ready(function() {
       vueObj.name = "";
       vueObj.number = "";
       vueObj.driver = "";
-      vueObj.expensesMax = 0;
-      vueObj.partners = [{ partner: "", value: 0, _id: new Date().getTime() }];
+      vueObj.expensesMax = null;
+      vueObj.partners = [{ partner: "", value: null, _id: new Date().getTime() }];
     });
   };
 
