@@ -97,17 +97,17 @@ $(document).ready(function() {
         months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         ySelect: new Date().getFullYear(),
         mSelect: new Date().getMonth() + 1,
-        driver: [{ name: "الكل", _id: 0 }],
-        partner: [{ name: "الكل", _id: 0 }],
-        sDriver: 0,
-        sPartner: 0
+        driver: [],
+        partner: [],
+        sDriver: null,
+        sPartner: null
       },
       methods: {
         reset() {
           this.ySelect = new Date().getFullYear();
-          this.methods = new Date().getMonth() + 1;
-          this.sDriver = 0;
-          this.sPartner = 0;
+          this.mSelect = new Date().getMonth() + 1;
+          this.sDriver = null;
+          this.sPartner = null;
         },
 
         printInfoDriver() {
@@ -156,8 +156,7 @@ $(document).ready(function() {
         //   //   driver: this.sDriver
         //   // });
         // },
-       
-       
+
         printAccountCars() {
           accountCar({
             success({ data }) {
@@ -184,7 +183,7 @@ $(document).ready(function() {
         printDriver() {
           driver({
             success({ data }) {
-              console.log(data);
+              pdfMake.createPdf(data.doc).download(data.fileName);
             },
             y: this.ySelect,
             m: this.mSelect,

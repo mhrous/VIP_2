@@ -5,6 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports._partner = exports._driver = exports.accountCar = exports.InfoCar = exports.InfoPartner = exports.InfoDriver = void 0;
 
+var _moment = _interopRequireDefault(require("moment"));
+
 var _user = _interopRequireDefault(require("../user/user.model"));
 
 var _car = _interopRequireDefault(require("../car/car.model"));
@@ -30,7 +32,12 @@ const reverseStr = str => str.split(" ").reverse().join(" ").trim();
 const stayleTable = {
   headerFile: {
     alignment: "center",
-    margin: [7, 7, 7, 7]
+    margin: [7, 7, 7, 7],
+    fontSize: 20
+  },
+  tableTitle: {
+    alignment: "center",
+    fontSize: 16
   },
   header: {
     bold: true,
@@ -53,6 +60,10 @@ const stayleTable = {
     color: "#172b4d",
     fontSize: 20,
     alignment: "center"
+  },
+  res: {
+    alignment: "center",
+    margin: [7, 7, 7, 7]
   }
 };
 const pdfFile = {
@@ -243,66 +254,7 @@ const InfoCar = async (req, res) => {
   } catch (e) {
     return res.status(400).end();
   }
-}; ////////////////////////////////
-
-/*
-
-
-*/
-// export const accountDriver = async (req, res) => {
-//   try {
-//     const { power } = req.user;
-//     if (power != "admin") {
-//       return res.status(401).end();
-//     }
-//     const data = {};
-//     const { y, m } = req.query;
-//     data.fileName = `جرد  حساب السائقين  ${m} - ${y} `;
-//     data.doc = { ...pdfFile };
-//     data.doc.pageOrientation = "landscape";
-//     data.doc.content = [
-//       {
-//         table: {
-//           headerRows: 1,
-//           widths: ["auto", "auto", "auto", "auto", "auto", "auto", "auto", "*"],
-//           body: [
-//             [
-//               { text: reverseStr("المتبقي"), style: "header" },
-//               { text: reverseStr("الدفعات"), style: "header" },
-//               { text: reverseStr("الصافي"), style: "header" },
-//               { text: reverseStr("اجمالي الحصص"), style: "header" },
-//               { text: reverseStr("الطلبات الخارجية"), style: "header" },
-//               { text: reverseStr("اجمالي وصول الدين"), style: "header" },
-//               { text: reverseStr("عدد وصول الدين"), style: "header" },
-//               { text: "الاسم", style: "header" }
-//             ]
-//           ]
-//         }
-//       }
-//     ];
-//     const users = await User.find({ power: "P", active: true })
-//       .select("name ")
-//       .lean()
-//       .exec();
-//     users.forEach((e, i) => {
-//       const style = (i + 1) % 2 ? "odd" : "even";
-//       data.doc.content[0].table.body.push([
-//         { text: "", style },
-//         { text: "", style },
-//         { text: "", style },
-//         { text: "", style },
-//         { text: "", style },
-//         { text: "", style },
-//         { text: "", style },
-//         { text: reverseStr(e.name), style }
-//       ]);
-//     });
-//     return res.status(200).json({ data: { y, m, name: "Driver" } });
-//   } catch (e) {
-//     return res.status(400).end();
-//   }
-// };
-
+};
 
 exports.InfoCar = InfoCar;
 
@@ -498,22 +450,7 @@ const accountCar = async (req, res) => {
     console.log(e);
     return res.status(400).end();
   }
-}; // export const accountPartner = async (req, res) => {
-//   try {
-//     const { power } = req.user;
-//     if (power != "admin") {
-//       return res.status(401).end();
-//     }
-//     const { y, m } = req.query;
-//     return res.status(200).json({ data: { m, y, name: "partner" } });
-//   } catch (e) {}
-// };
-
-/*
-
-
-*/
-
+};
 
 exports.accountCar = accountCar;
 
@@ -527,147 +464,326 @@ const _driver = async (req, res) => {
       return res.status(401).end();
     }
 
-    let users = [];
+    const data = {};
     const {
-      d,
+      y,
       m,
-      y
+      d
     } = req.query;
+    const driver = await _user.default.findById(d).select("name").lean().exec();
+    data.fileName = `جرد ${driver.name} ${m} - ${y}`;
+    data.doc = _objectSpread({}, pdfFile);
+    data.doc.content = [{
+      text: reverseStr(`  جرد حساب ${driver.name}  ${m} - ${y} `),
+      style: "headerFile"
+    }, "\n", "\n"];
+    const travelTable = {
+      table: {
+        headerRows: 1,
+        widths: [54, "*", 75, 75, 58, 70, 20],
+        body: [[{
+          text: "الصافي",
+          style: "header"
+        }, {
+          text: reverseStr("وصول الدين"),
+          style: "header"
+        }, {
+          text: reverseStr("عودة كاش "),
+          style: "header"
+        }, {
+          text: reverseStr("ذهاب كاش "),
+          style: "header"
+        }, {
+          text: "مصروف",
+          style: "header"
+        }, {
+          text: "التاريخ",
+          style: "header"
+        }, {
+          text: "",
+          style: "header"
+        }]]
+      }
+    };
+    const repairingTable = {
+      table: {
+        headerRows: 1,
+        widths: [50, "*", 70, 70, "*", 70, 20],
+        body: [[{
+          text: "القيمة",
+          style: "header"
+        }, {
+          text: reverseStr("من قبل"),
+          style: "header"
+        }, {
+          text: reverseStr("مكتب"),
+          style: "header"
+        }, {
+          text: reverseStr("رقم الزبون"),
+          style: "header"
+        }, {
+          text: reverseStr(" اسم الزبون"),
+          style: "header"
+        }, {
+          text: "التاريخ",
+          style: "header"
+        }, {
+          text: "",
+          style: "header"
+        }]]
+      }
+    };
+    const expensesTable = {
+      table: {
+        headerRows: 1,
+        widths: ["*", 80, 70],
+        body: [[{
+          text: reverseStr("السبب"),
+          style: "header"
+        }, {
+          text: reverseStr("القيمة"),
+          style: "header"
+        }, {
+          text: "التاريخ",
+          style: "header"
+        }]]
+      }
+    };
+    const paymentTable = {
+      table: {
+        headerRows: 1,
+        widths: ["*", 70],
+        body: [[{
+          text: reverseStr("القيمة"),
+          style: "header"
+        }, {
+          text: "التاريخ",
+          style: "header"
+        }]]
+      }
+    };
 
-    if (d == 0) {
-      users = await _user.default.find({
-        power: "D",
-        active: true
+    const getData = async (m, y, d) => {
+      m = parseInt(m) - 1;
+      const obj = {
+        travel: [],
+        payment: [],
+        expenses: []
+      };
+      const start = (0, _utils.getFirstOfThisMonth)(m, y);
+      const end = (0, _utils.getFirstOfNextMonth)(m, y);
+      const travel = await _travel.default.find({
+        date: {
+          $gt: start,
+          $lt: end
+        },
+        driver: d
+      }).populate("repairing.partner", "name").select("date expenses cashBack cashTo repairing").lean().exec();
+      obj.travel = travel;
+      const expenses = await _expenses.default.find({
+        driver: d,
+        onDriver: true,
+        date: {
+          $gt: start,
+          $lt: end
+        }
+      }).select("reason amount date").lean().exec();
+      obj.expenses = expenses;
+      const payment = await _payment.default.find({
+        user: d,
+        date: {
+          $gt: start,
+          $lt: end
+        }
+      }).lean().exec();
+      obj.payment = payment;
+      return obj;
+    };
+
+    const obj = await getData(m, y, d);
+    console.log(obj); // const result = processingData(obj);
+
+    let repairigArray = [];
+    obj.travel.forEach((e, i) => {
+      const style = (i + 1) % 2 ? "odd" : "even";
+      const {
+        date,
+        cashBack,
+        cashTo,
+        expenses,
+        repairing
+      } = e;
+      let repairigString = "";
+      repairing.forEach((_e, _i) => {
+        _e.date = date;
+        repairigArray = [...repairigArray, _e];
+        repairigString += `(${_e.value}) ${reverseStr(_e.partner.name)} \n`;
       });
-    } else {
-      const driver = await _user.default.findById(d);
-      users.push(driver);
-    }
-
-    const array = [];
-    users.forEach(e => {
-      const data = {};
-      data.fileName = ` ${reverseStr(e.name)} ${m} - ${y} `;
-      data.doc = _objectSpread({}, pdfFile);
-      data.doc.content = [{
-        text: "\n\nالسفرات\n\n",
-        style: "title"
+      const result = cashTo + cashBack + repairing.reduce((a, b) => a + b.value, 0) - expenses;
+      travelTable.table.body.push([{
+        text: result,
+        style
       }, {
-        table: {
-          headerRows: 1,
-          widths: ["*", "*", "*", "*", "*", "auto"],
-          body: [[{
-            text: "صافي",
-            style: "header"
-          }, {
-            text: "اياب",
-            style: "header"
-          }, {
-            text: "ذهاب",
-            style: "header"
-          }, {
-            text: "مصروف",
-            style: "header"
-          }, {
-            text: "تاريخ",
-            style: "header"
-          }, {
-            text: "",
-            style: "header"
-          }]]
-        }
+        text: repairigString,
+        style
       }, {
-        text: "\n\n" + reverseStr("وصول الدين") + "\n\n",
-        style: "title"
+        text: cashBack,
+        style
       }, {
-        table: {
-          headerRows: 1,
-          widths: ["*", "*", "*", "auto", "auto", "*", "auto"],
-          body: [[{
-            text: "قيمة",
-            style: "header"
-          }, {
-            text: reverseStr(" من قبل"),
-            style: "header"
-          }, {
-            text: "مكتب",
-            style: "header"
-          }, {
-            text: reverseStr("اسم الزبون"),
-            style: "header"
-          }, {
-            text: reverseStr("رقم الزبون"),
-            style: "header"
-          }, {
-            text: "تاريخ",
-            style: "header"
-          }, {
-            text: "",
-            style: "header"
-          }]]
-        }
+        text: cashTo,
+        style
       }, {
-        text: "\n\n" + reverseStr("مصاريف اضافية") + "\n\n",
-        style: "title"
+        text: expenses,
+        style
       }, {
-        table: {
-          headerRows: 1,
-          widths: ["*", "*", "*", "auto"],
-          body: [[{
-            text: "فيمة",
-            style: "header"
-          }, {
-            text: "السبب",
-            style: "header"
-          }, {
-            text: "تاريخ",
-            style: "header"
-          }, {
-            text: "",
-            style: "header"
-          }]]
-        }
+        text: (0, _moment.default)(date).format("YYYY/MM/DD"),
+        style
       }, {
-        text: "\n\nدفعات\n\n",
-        style: "title"
-      }, {
-        table: {
-          headerRows: 1,
-          widths: ["*", "*", "auto"],
-          body: [[{
-            text: "فيمة",
-            style: "header"
-          }, {
-            text: "تاريخ",
-            style: "header"
-          }, {
-            text: "",
-            style: "header"
-          }]]
-        }
-      }];
-
-      for (let i = 1; i < 25; i++) {
-        data.doc.content[1].table.body.push(["", "", "", "", "", `${i}`]);
-        data.doc.content[3].table.body.push(["", "", "", "", "", "", `${i}`]);
-        data.doc.content[5].table.body.push(["", "", "", `${i}`]);
-        data.doc.content[7].table.body.push(["", "", `"${i}`]);
-      }
-
-      array.push(data);
+        text: i + 1,
+        style
+      }]);
     });
-    return res.status(200).json({
-      data: {
-        m,
-        y,
-        d,
-        name: "d"
-      }
+    repairigArray.forEach((_e, _i) => {
+      const style = (_i + 1) % 2 ? "odd" : "even";
+      const {
+        clientName,
+        clientPhone,
+        value,
+        from
+      } = _e;
+      repairingTable.table.body.push([{
+        text: value,
+        style
+      }, {
+        text: from,
+        style
+      }, {
+        text: reverseStr(_e.partner.name),
+        style
+      }, {
+        text: clientPhone,
+        style
+      }, {
+        text: clientName,
+        style
+      }, {
+        text: (0, _moment.default)(_e.date).format("YYYY/MM/DD"),
+        style
+      }, {
+        text: _i + 1,
+        style
+      }]);
     });
+    obj.expenses.forEach((e, i) => {
+      const style = (i + 1) % 2 ? "odd" : "even";
+      const {
+        date,
+        amount,
+        reason
+      } = e;
+      expensesTable.table.body.push([{
+        text: reason,
+        style
+      }, {
+        text: amount,
+        style
+      }, {
+        text: (0, _moment.default)(date).format("YYYY/MM/DD"),
+        style
+      }]);
+    });
+    obj.payment.forEach((e, i) => {
+      const style = (i + 1) % 2 ? "odd" : "even";
+      const {
+        date,
+        amount
+      } = e;
+      paymentTable.table.body.push([{
+        text: amount,
+        style
+      }, {
+        text: (0, _moment.default)(date).format("YYYY/MM/DD"),
+        style
+      }]);
+    });
+    const travelPrint = travelTable.table.body.length > 1 ? [{
+      text: reverseStr("السفرات"),
+      style: "tableTitle"
+    }, "\n", travelTable] : [];
+    const repairigPrint = repairingTable.table.body.length > 1 ? [{
+      text: reverseStr("وصول الدين"),
+      style: "tableTitle",
+      pageBreak: "before"
+    }, "\n", repairingTable] : [];
+    const expensesPrint = expensesTable.table.body.length > 1 ? [{
+      text: reverseStr("مصاريف دفعها السائق"),
+      style: "tableTitle",
+      pageBreak: "before"
+    }, "\n", expensesTable] : [];
+    const paymentPrint = paymentTable.table.body.length > 1 ? [{
+      text: reverseStr(" دفعات السائق السائق"),
+      style: "tableTitle",
+      pageBreak: "before"
+    }, "\n", paymentTable] : [];
+    const totalTravel = obj.travel.reduce((a, b) => a + b.cashTo + b.cashBack + b.repairing.reduce((_a, _b) => _a + _b.value, 0), 0);
+    const totalMainExpenses = obj.travel.reduce((a, b) => a + b.expenses, 0);
+    const totalRepairing = repairigArray.reduce((a, b) => a + b.value, 0);
+    const totalExpenses = obj.expenses.reduce((a, b) => a + b.amount, 0);
+    const totalPayment = obj.payment.reduce((a, b) => a + b.amount, 0);
+    const finalRes = totalTravel - totalMainExpenses - totalRepairing - totalExpenses - totalPayment;
+    const resTable = {
+      table: {
+        headerRows: 1,
+        widths: ["*", "*"],
+        body: [[{
+          text: totalTravel,
+          style: "res"
+        }, {
+          text: reverseStr("اجمالي السفرات"),
+          style: "res"
+        }], [{
+          text: totalMainExpenses,
+          style: "res"
+        }, {
+          text: reverseStr("مصروف السفرات"),
+          style: "res"
+        }], [{
+          text: totalRepairing,
+          style: "res"
+        }, {
+          text: reverseStr("وصول الدين"),
+          style: "res"
+        }], [{
+          text: totalExpenses,
+          style: "res"
+        }, {
+          text: reverseStr("المصاريف"),
+          style: "res"
+        }], [{
+          text: totalPayment,
+          style: "res"
+        }, {
+          text: reverseStr("الدفعات"),
+          style: "res"
+        }], [{
+          text: finalRes,
+          style: "header"
+        }, {
+          text: reverseStr(""),
+          style: "header"
+        }]]
+      }
+    };
+    data.doc.content = [...data.doc.content, ...travelPrint, ...repairigPrint, ...expensesPrint, ...paymentPrint, {
+      text: reverseStr(" الحساب"),
+      style: "tableTitle",
+      pageBreak: "before"
+    }, "\n", resTable];
     return res.status(200).json({
-      data: array
+      data
     });
   } catch (e) {
+    console.log(e);
     return res.status(400).end();
   }
 };
