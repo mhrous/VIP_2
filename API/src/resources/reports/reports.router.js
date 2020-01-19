@@ -3,7 +3,7 @@ import {
   InfoCar,
   InfoDriver,
   InfoPartner,
-  // accountDriver,
+  accountDriver,
   // accountPartner,
   _partner,
   _driver,
@@ -16,7 +16,7 @@ router.get("/info/partner", InfoPartner);
 router.get("/info/car", InfoCar);
 
 router.get("/account/cars", accountCar);
-// router.get("/account/drivers", accountDriver);
+router.get("/account/drivers", accountDriver);
 // router.get("/account/partners", accountPartner);
 
 router.get("/account/_driver", _driver);

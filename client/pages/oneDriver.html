@@ -181,33 +181,6 @@
                             <div
                               class=" col-6 input-group input-group-alternative"
                             >
-                              <date-picker
-                                value="date"
-                                name="date"
-                                v-model="date"
-                                :config="H_.options"
-                                @keyup.enter="ok"
-                              ></date-picker>
-                            </div>
-                            <div
-                              class=" col-6 input-group input-group-alternative"
-                            >
-                              <input
-                                placeholder="المصروف  "
-                                type="number"
-                                min="0"
-                                step="100"
-                                v-model="expenses"
-                                class="form-control"
-                                @keyup.enter="ok"
-                              />
-                            </div>
-                          </div>
-
-                          <div class="form-group row has-danger mb-3">
-                            <div
-                              class=" col-6 input-group input-group-alternative"
-                            >
                               <input
                                 placeholder="ذهاب كاش"
                                 type="number"
@@ -232,6 +205,35 @@
                               />
                             </div>
                           </div>
+                          <div class="form-group row has-danger mb-3">
+            
+                            <div
+                              class=" col-6 input-group input-group-alternative"
+                            >
+                              <input
+                                placeholder="المصروف  "
+                                type="number"
+                                min="0"
+                                step="100"
+                                v-model="expenses"
+                                class="form-control"
+                                @keyup.enter="ok"
+                              />
+                            </div>
+                            <div
+                            class=" col-6 input-group input-group-alternative"
+                          >
+                            <date-picker
+                              value="date"
+                              name="date"
+                              v-model="date"
+                              :config="H_.options"
+                              @keyup.enter="ok"
+                            ></date-picker>
+                          </div>
+                          </div>
+
+                     
 
                           <div class="card mb-1" v-for="r in repairing">
                             <div class="card-body">

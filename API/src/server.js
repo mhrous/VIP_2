@@ -18,8 +18,9 @@ import {
 
 export const app = express();
 
-app.disable("etag");
-
+// app.disable("etag");
+console.log(5)
+app.use(morgan("dev"))
 app.use(json());
 app.use(
   urlencoded({

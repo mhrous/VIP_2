@@ -100,7 +100,7 @@ export const editTravel = async (req, res) => {
       const [y, m, d] = req.body.date.split("-");
       req.body.date = new Date().setFullYear(y, m - 1, d);
     }
-
+    req.body.repairing = req.body.repairing || [];
     const data = await Travel.findByIdAndUpdate(_id, req.body, {
       new: true
     })

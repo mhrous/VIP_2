@@ -18,7 +18,12 @@ $(document).ready(function() {
       paging: false,
       searching: false
     });
+
     const addToRepairingTable = data => {
+      console.log(data.repairing);
+
+      if (!data.repairing) return;
+      console.log(data.repairing);
       data.repairing.forEach(obj => {
         const newRow = _repairingTable.row
           .add([
@@ -33,18 +38,19 @@ $(document).ready(function() {
           ])
           .draw(false)
           .node();
-        $(newRow).attr("id", new Date(obj._id).getTime());
+        $(newRow).addClass(`${data._id}`);
       });
     };
     const removeFromRepairingTable = data => {
-      data.repairing.forEach(obj => {
-        const row = _repairingTable.row(`#${new Date(obj._id).getTime()}`);
-
-        row.remove().draw();
-      });
+      if (!data.repairing) return;
+      const row = _repairingTable
+        .rows(`.${data._id}`)
+        .remove()
+        .draw();
     };
     const editFromRepairingTable = data => {
       data.forEach(obj => {
+        console.log(obj);
         const row = _repairingTable.row(`#${new Date(obj._id).getTime()}`);
         const rowNode = row
           .data([
@@ -71,7 +77,6 @@ $(document).ready(function() {
       if (array.length == 0) return FALSE;
       let str = "<div>";
       array.forEach(e => {
-      
         str += `<p> ${
           __DATA__.partners.find(c => c._id == e.partner).name
         } : (${e.value})</p>`;
@@ -119,7 +124,6 @@ $(document).ready(function() {
     $("body").on("click", "#travel-table .edit-table", function() {
       const id = $(this).data("id");
       const data = __DATA__.travel.find(e => e._id == id);
-
       $("#travel-modal #modal").modal("show");
       vueObj.H_.title = "تعديل  السفرة";
       vueObj.H_.edit = true;
@@ -155,12 +159,13 @@ $(document).ready(function() {
     const editFromTravelTable = ({ id, data }) => {
       __DATA__.travel = __DATA__.travel.map(e => (e._id == id ? data : e));
       const index = __DATA__.travel.findIndex(e => e._id == id);
-
       const row = travelTable.row("#" + id);
       if (
         new Date(data.date).getMonth() == new Date(MainDate.date).getMonth()
       ) {
-        editFromRepairingTable(data.repairing);
+        console.log(data.repairing, ";;;;;;;;;");
+        removeFromRepairingTable(data);
+        addToRepairingTable(data);
         const rowNode = row
           .data([
             moment(data.date).format("YYYY-MM-DD"),
@@ -169,7 +174,7 @@ $(document).ready(function() {
             data.cashBack,
             renderRepairing(data.repairing),
 
-            "",
+            getRes(data),
             renderTableAction(data._id)
           ])
           .draw(false);
@@ -183,6 +188,7 @@ $(document).ready(function() {
         ];
       }
     };
+
     const clearTable = () => {
       _repairingTable.clear().draw();
       travelTable.clear().draw();
@@ -648,8 +654,8 @@ $(document).ready(function() {
           date: null,
           amount: null,
           reason: "",
-          onCar: false,
-          onDriver: false,
+          onCar: true,
+          onDriver: true,
           onPartner: false,
           partner: null
         },
@@ -728,8 +734,8 @@ $(document).ready(function() {
         vueObj.date = moment().format("YYYY-MM-DD");
         vueObj.amount = null;
         vueObj.reason = "";
-        vueObj.onCar = false;
-        vueObj.onDriver = false;
+        vueObj.onCar = true;
+        vueObj.onDriver = true;
         vueObj.onPartner = false;
         vueObj.partner = null;
       });
@@ -802,51 +808,51 @@ $(document).ready(function() {
       if (e.cashBack == 0 && repairingBackValue == 0) ematyTravel++;
     });
 
+    //   str = `
+
+    //   <div class="card  shadow p-2 mb-3">
+    //   <div class="card-header">
+    //     <h4 style="color:  #5e72e4; text-align: center;">صافي السيارة</h4>
+    //   </div>
+    //   <div class="card-body" style="text-align: right;">
+    //     <div class="row">
+    //       <div class="col-9">
+    //         <h4 style="color:  #5e72e4; ">سفرات</h4>
+    //       </div>
+    //       <div class="col-3">
+    //         <h4 style="color:  #5e72e4; ">${totalTravel}</h4>
+    //       </div>
+    //     </div>
+    //     <div class="row">
+    //       <div class="col-9">
+    //         <h4 style="color:  #5e72e4; ">مصروف</h4>
+    //       </div>
+    //       <div class="col-3">
+    //         <h4 style="color:  #5e72e4; ">${totalExpenses}</h4>
+    //       </div>
+    //     </div>
+    //     <div class="row">
+    //       <div class="col-9">
+    //         <h4 style="color:  #5e72e4; ">تصليح</h4>
+    //       </div>
+    //       <div class="col-3">
+    //         <h4 style="color:  #5e72e4; ">${totalExpensesOnCar}</h4>
+    //       </div>
+    //     </div>
+    //   </div>
+
+    //   <div class="card-footer">
+    //     <div class="row">
+
+    //       <div class="col-9"></div>
+    //       <div class="col-3" style="text-align: right;">
+    //         <h4 style="color:  #5e72e4;">${caProduct}</h4>
+    //       </div>
+    //     </div>
+    //   </div>
+    // </div>
+
     str = `
- 
-    <div class="card  shadow p-2 mb-3">
-    <div class="card-header">
-      <h4 style="color:  #5e72e4; text-align: center;">صافي السيارة</h4>
-    </div>
-    <div class="card-body" style="text-align: right;">
-      <div class="row">
-        <div class="col-9">
-          <h4 style="color:  #5e72e4; ">سفرات</h4>
-        </div>
-        <div class="col-3">
-          <h4 style="color:  #5e72e4; ">${totalTravel}</h4>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-9">
-          <h4 style="color:  #5e72e4; ">مصروف</h4>
-        </div>
-        <div class="col-3">
-          <h4 style="color:  #5e72e4; ">${totalExpenses}</h4>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-9">
-          <h4 style="color:  #5e72e4; ">تصليح</h4>
-        </div>
-        <div class="col-3">
-          <h4 style="color:  #5e72e4; ">${totalExpensesOnCar}</h4>
-        </div>
-      </div>
-    </div>
-  
-    <div class="card-footer">
-      <div class="row">
-      
-        <div class="col-9"></div>
-        <div class="col-3" style="text-align: right;">
-          <h4 style="color:  #5e72e4;">${caProduct}</h4>
-        </div>
-      </div>
-    </div>
-  </div>
- 
- 
     <div class="card shadow mb-3">
     <div class="card-header">
       <h4 style="color:  #5e72e4; text-align: center;">معلومات السائق</h4>
@@ -904,6 +910,19 @@ $(document).ready(function() {
               <h4 style="color:  #5e72e4;">${totalExpenses}</h4>
             </div>
           </div>
+
+          <hr />
+          <div class="mb-3 row">
+          <div class="col-9">
+          <h4 class="mb-3">الاجمالي  :</h4>
+
+          </div>
+          <div class="col-3">
+            <h4 style="color:  #5e72e4;">${totalTravel - totalExpenses}</h4>
+          </div>
+        </div>
+
+
           <div class="mb-3 row">
             <div class="col-9">
               <h4 class="mb-3">
@@ -915,8 +934,7 @@ $(document).ready(function() {
             </div>
           </div>
   
-          <hr />
-          <hr />
+
   
           <div class="mb-3 row">
             <div class="col-9">

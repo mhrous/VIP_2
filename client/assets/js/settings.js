@@ -135,27 +135,27 @@ $(document).ready(function() {
         //////////////////
         ////////////////
 
-        // printAccountDriver() {
-        //   accountDriver({
-        //     success({ data }) {
-        //       console.log(data);
-        //       pdfMake.createPdf(data.doc).download(data.fileName);
+        printAccountDriver() {
+          accountDriver({
+            success({ data }) {
+              console.log(data);
+              pdfMake.createPdf(data.doc).download(data.fileName);
 
-        //     },
-        //     y: this.ySelect,
-        //     m: this.mSelect
-        //   });
-        //   // accountDriver({
-        //   //   success({ data }) {
-        //   //     data.forEach(d => {
-        //   //       pdfMake.createPdf(d.doc).download(d.fileName);
-        //   //     });
-        //   //   },
-        //   //   y: this.ySelect,
-        //   //   m: this.mSelect,
-        //   //   driver: this.sDriver
-        //   // });
-        // },
+            },
+            y: this.ySelect,
+            m: this.mSelect
+          });
+          // accountDriver({
+          //   success({ data }) {
+          //     data.forEach(d => {
+          //       pdfMake.createPdf(d.doc).download(d.fileName);
+          //     });
+          //   },
+          //   y: this.ySelect,
+          //   m: this.mSelect,
+          //   driver: this.sDriver
+          // });
+        },
 
         printAccountCars() {
           accountCar({
@@ -193,7 +193,7 @@ $(document).ready(function() {
         PrintPartner() {
           partner({
             success({ data }) {
-              console.log(data);
+              pdfMake.createPdf(data.doc).download(data.fileName);
             },
             y: this.ySelect,
             m: this.mSelect,

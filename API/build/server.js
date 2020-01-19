@@ -21,9 +21,11 @@ var _resources = require("./resources");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const app = (0, _express.default)();
+const app = (0, _express.default)(); // app.disable("etag");
+
 exports.app = app;
-app.disable("etag");
+console.log(5);
+app.use((0, _morgan.default)("dev"));
 app.use((0, _bodyParser.json)());
 app.use((0, _bodyParser.urlencoded)({
   extended: true

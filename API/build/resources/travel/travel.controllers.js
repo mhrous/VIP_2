@@ -98,6 +98,7 @@ const editTravel = async (req, res) => {
       req.body.date = new Date().setFullYear(y, m - 1, d);
     }
 
+    req.body.repairing = req.body.repairing || [];
     const data = await _travel.default.findByIdAndUpdate(_id, req.body, {
       new: true
     }).lean().exec();

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports._partner = exports._driver = exports.accountCar = exports.InfoCar = exports.InfoPartner = exports.InfoDriver = void 0;
+exports._partner = exports._driver = exports.accountDriver = exports.accountCar = exports.InfoCar = exports.InfoPartner = exports.InfoDriver = void 0;
 
 var _moment = _interopRequireDefault(require("moment"));
 
@@ -454,6 +454,184 @@ const accountCar = async (req, res) => {
 
 exports.accountCar = accountCar;
 
+const accountDriver = async (req, res) => {
+  try {
+    const {
+      power
+    } = req.user;
+
+    if (power != "admin") {
+      return res.status(401).end();
+    }
+
+    const data = {};
+    const {
+      y,
+      m
+    } = req.query;
+    data.fileName = `جرد السائقين ${m} - ${y}`;
+    data.doc = _objectSpread({}, pdfFile);
+    data.doc.pageOrientation = "landscape";
+    data.doc.content = [{
+      text: reverseStr(`  جرد حساب السائقين  ${m} - ${y} `),
+      style: "headerFile"
+    }];
+    const mytable = {
+      table: {
+        headerRows: 1,
+        widths: [60, 60, "*", "*", "*", "*", "*"],
+        body: [[{
+          text: "الصافي",
+          style: "header"
+        }, {
+          text: "التصليح",
+          style: "header"
+        }, {
+          text: reverseStr("اجمالي   السفرات "),
+          style: "header"
+        }, {
+          text: reverseStr("قيمة وصول الدين "),
+          style: "header"
+        }, {
+          text: reverseStr("عدد وصول الدين "),
+          style: "header"
+        }, {
+          text: reverseStr("عدد السفرات "),
+          style: "header"
+        }, {
+          text: reverseStr("اسم السائق"),
+          style: "header"
+        }]]
+      }
+    };
+
+    const getData = async (m, y) => {
+      m = parseInt(m) - 1;
+      const obj = {};
+      const start = (0, _utils.getFirstOfThisMonth)(m, y);
+      const end = (0, _utils.getFirstOfNextMonth)(m, y);
+      const cars = await _car.default.find({}).select("-partners").populate("driver", "name").lean().exec();
+      cars.forEach(c => {
+        obj[c._id] = {
+          travel: [],
+          expenses: [],
+          name: c.name,
+          number: c.number,
+          expensesMax: c.expensesMax,
+          driverName: c.driver.name
+        };
+      });
+      const travel = await _travel.default.find({
+        date: {
+          $gt: start,
+          $lt: end
+        }
+      }).populate("car", "-driver -partners").lean().exec();
+      travel.forEach(e => {
+        const index = e.car._id.toString();
+
+        obj[index].travel = [...obj[index].travel, e];
+      });
+      const expenses = await _expenses.default.find({
+        onCar: true,
+        date: {
+          $gt: start,
+          $lt: end
+        }
+      }).select("car amount").lean().exec();
+      expenses.forEach(e => {
+        const index = e.car;
+        obj[index].expenses = [...obj[index].expenses, e];
+      });
+      return obj;
+    };
+
+    const processingData = obj => {
+      let array = [];
+
+      for (let a of Object.values(obj)) {
+        const {
+          name,
+          number,
+          driverName,
+          travel,
+          expenses
+        } = a;
+        const numberTravel = travel.length;
+        const numberRepairing = travel.reduce((a, b) => a + b.repairing.length, 0);
+        const totalRepairing = travel.reduce((a, b) => a + b.repairing.reduce((_a, _b) => _a + _b.value, 0), 0);
+        const totalTravel = travel.reduce((a, b) => a + b.cashTo + b.cashBack, 0) + totalRepairing;
+        const travelExpenses = travel.reduce((a, b) => a + b.expenses, 0);
+        const carExpenses = expenses.reduce((a, b) => a + b.amount, 0);
+        const result = totalTravel - travelExpenses - carExpenses;
+        array = [...array, {
+          name,
+          number,
+          driverName,
+          numberTravel,
+          numberRepairing,
+          totalRepairing,
+          totalTravel,
+          travelExpenses,
+          carExpenses,
+          result
+        }];
+      }
+
+      return array;
+    };
+
+    const obj = await getData(m, y);
+    const result = processingData(obj);
+    result.forEach((e, i) => {
+      const style = (i + 1) % 2 ? "odd" : "even";
+      const {
+        name,
+        number,
+        driverName,
+        numberTravel,
+        numberRepairing,
+        totalRepairing,
+        totalTravel,
+        travelExpenses,
+        carExpenses,
+        result
+      } = e;
+      mytable.table.body.push([{
+        text: `${result - totalRepairing}`,
+        style
+      }, {
+        text: carExpenses,
+        style
+      }, {
+        text: `${totalTravel - travelExpenses}`,
+        style
+      }, {
+        text: totalRepairing,
+        style
+      }, {
+        text: numberRepairing,
+        style
+      }, {
+        text: numberTravel,
+        style
+      }, {
+        text: reverseStr(driverName),
+        style
+      }]);
+    });
+    data.doc.content = [...data.doc.content, mytable];
+    return res.status(200).json({
+      data
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(400).end();
+  }
+};
+
+exports.accountDriver = accountDriver;
+
 const _driver = async (req, res) => {
   try {
     const {
@@ -792,98 +970,120 @@ exports._driver = _driver;
 
 const _partner = async (req, res) => {
   try {
-    const {
-      power
-    } = req.user;
-
-    if (power != "admin") {
-      return res.status(401).end();
-    }
-
     const data = {};
     const {
       y,
       m,
       p
     } = req.query;
-    data.fileName = `جرد  حساب الشركاء ${m} - ${y} `;
+    const partner = await _user.default.findById(p).select("name").lean().exec();
+    data.fileName = `جرد ${partner.name} ${m} - ${y}`;
     data.doc = _objectSpread({}, pdfFile);
-    data.doc.pageOrientation = "landscape";
     data.doc.content = [{
+      text: reverseStr(`  جرد حساب ${partner.name}  ${m} - ${y} `),
+      style: "headerFile"
+    }, "\n", "\n"];
+    const repairingTable = {
       table: {
         headerRows: 1,
-        widths: ["auto", "auto", "auto", "auto", "auto", "auto", "auto", "*"],
+        widths: [50, "*", 70, 70, "*", 70, 20],
         body: [[{
-          text: reverseStr("المتبقي"),
+          text: "القيمة",
           style: "header"
         }, {
-          text: reverseStr("الدفعات"),
+          text: reverseStr("من قبل"),
           style: "header"
         }, {
-          text: reverseStr("الصافي"),
+          text: reverseStr("رقم الزبون"),
           style: "header"
         }, {
-          text: reverseStr("اجمالي الحصص"),
+          text: "اسم الزبون",
           style: "header"
         }, {
-          text: reverseStr("الطلبات الخارجية"),
+          text: reverseStr("السائق"),
           style: "header"
         }, {
-          text: reverseStr("اجمالي وصول الدين"),
+          text: "التاريخ",
           style: "header"
         }, {
-          text: reverseStr("عدد وصول الدين"),
-          style: "header"
-        }, {
-          text: "الاسم",
+          text: "",
           style: "header"
         }]]
       }
-    }];
-    const users = await _user.default.find({
-      power: "P",
-      active: true
-    }).select("name ").lean().exec();
-    users.forEach((e, i) => {
-      const style = (i + 1) % 2 ? "odd" : "even";
-      data.doc.content[0].table.body.push([{
-        text: "",
+    };
+
+    const getData = async (m, y, p) => {
+      m = parseInt(m) - 1;
+      const obj = {
+        travel: []
+      };
+      const start = (0, _utils.getFirstOfThisMonth)(m, y);
+      const end = (0, _utils.getFirstOfNextMonth)(m, y);
+      const travel = await _travel.default.find({
+        date: {
+          $gt: start,
+          $lt: end
+        },
+        repairing: {
+          $elemMatch: {
+            partner: p
+          }
+        }
+      }).populate("driver", "name").select("date  repairing driver").lean().exec();
+      obj.travel = travel;
+      return obj;
+    };
+
+    const obj = await getData(m, y, p);
+    let repairigArray = [];
+    obj.travel.forEach((e, i) => {
+      e.repairing.forEach((_e, _i) => {
+        repairigArray = [...repairigArray, _objectSpread({}, _e, {
+          driver: e.driver.name
+        })];
+      });
+    });
+    repairigArray.forEach((_e, _i) => {
+      const style = (_i + 1) % 2 ? "odd" : "even";
+      const {
+        clientName,
+        clientPhone,
+        value,
+        from
+      } = _e;
+      repairingTable.table.body.push([{
+        text: value,
         style
       }, {
-        text: "",
+        text: from,
         style
       }, {
-        text: "",
+        text: clientPhone,
         style
       }, {
-        text: "",
+        text: clientName,
         style
       }, {
-        text: "",
+        text: reverseStr(_e.driver),
         style
       }, {
-        text: "",
+        text: (0, _moment.default)(_e.date).format("YYYY/MM/DD"),
         style
       }, {
-        text: "",
-        style
-      }, {
-        text: reverseStr(e.name),
+        text: _i + 1,
         style
       }]);
     });
-    return res.status(200).json({
-      data: {
-        m,
-        y,
-        p,
-        name: "p"
-      }
-    });
+    const repairigPrint = repairingTable.table.body.length > 1 ? [{
+      text: reverseStr("وصول الدين"),
+      style: "tableTitle"
+    }, "\n", repairingTable] : [];
+    data.doc.content = [...data.doc.content, ...repairigPrint];
     return res.status(200).json({
       data
     });
   } catch (e) {
+    console.log(e);
     return res.status(400).end();
   }
 };
