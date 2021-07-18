@@ -117,6 +117,7 @@ export const onePartner = async (req, res) => {
 export const oneDriverConst = async (req, res) => {
   try {
     let { _id } = req.query;
+    console.log(_id)
 
     const data = {};
 
@@ -129,6 +130,7 @@ export const oneDriverConst = async (req, res) => {
       .select("-partners")
       .lean()
       .exec();
+    console.log(_id,partners,car)
 
     data.partners = partners;
     data.car = car;

@@ -140,6 +140,7 @@ const oneDriverConst = async (req, res) => {
     let {
       _id
     } = req.query;
+    console.log(_id);
     const data = {};
     const partners = await _user.default.find({
       power: "P",
@@ -148,6 +149,7 @@ const oneDriverConst = async (req, res) => {
     const car = await _car.default.findOne({
       driver: _id
     }).populate("driver", "name").select("-partners").lean().exec();
+    console.log(_id, partners, car);
     data.partners = partners;
     data.car = car;
     res.json({
